@@ -23,6 +23,7 @@
 </head>
 <body class="min-h-screen flex">
 
+    <!-- SIDEBAR -->
     <div id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-[#1e293b] border-r border-slate-700 z-50 transform -translate-x-full transition-transform duration-300 md:translate-x-0 flex flex-col justify-between">
         <div class="p-5">
             <div class="flex items-center justify-between mb-6 border-b border-slate-700 pb-4">
@@ -57,10 +58,11 @@
             </nav>
         </div>
         <div class="p-4 border-t border-slate-700 bg-slate-900/20 text-center text-xs text-slate-500">
-            Dados 100% Locais
+            Sincronizado Localmente
         </div>
     </div>
 
+    <!-- MAIN CONTENT -->
     <div class="flex-1 md:ml-64 p-4 md:p-8 space-y-6">
         
         <header class="flex items-center justify-between p-4 card">
@@ -73,16 +75,17 @@
 
             <div class="flex gap-3 items-center bg-slate-900/60 p-2 rounded-lg border border-slate-700 text-xs">
                 <label class="flex items-center gap-1.5 cursor-pointer">
-                    <input type="checkbox" id="saude-remedio" class="w-4 h-4 accent-emerald-500">
+                    <input type="checkbox" id="saude-remedio" class="w-4 h-4 accent-emerald-500" onchange="salvarEstadoGeral()">
                     <span>Remédio</span>
                 </label>
                 <label class="flex items-center gap-1.5 cursor-pointer">
-                    <input type="checkbox" id="saude-creatina" class="w-4 h-4 accent-emerald-500">
+                    <input type="checkbox" id="saude-creatina" class="w-4 h-4 accent-emerald-500" onchange="salvarEstadoGeral()">
                     <span>Creatina</span>
                 </label>
             </div>
         </header>
 
+        <!-- ABA PAINEL PRINCIPAL -->
         <div id="aba-painel" class="tab-content active space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="card p-5 lg:col-span-2 space-y-4">
@@ -93,15 +96,15 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div class="bg-slate-900/50 p-3 rounded border border-slate-700">
                             <span class="block text-xs text-slate-400 mb-1">Faturamento Hoje</span>
-                            <div class="text-emerald-400 font-bold flex items-center gap-1">R$ <input type="number" id="box-hoje" placeholder="0,00" class="w-full bg-transparent focus:outline-none"></div>
+                            <div class="text-emerald-400 font-bold flex items-center gap-1">R$ <input type="number" id="box-hoje" placeholder="0,00" class="w-full bg-transparent focus:outline-none" onchange="salvarEstadoGeral()"></div>
                         </div>
                         <div class="bg-slate-900/50 p-3 rounded border border-slate-700">
                             <span class="block text-xs text-slate-400 mb-1">Faturamento Ontem</span>
-                            <div class="text-slate-300 font-bold flex items-center gap-1">R$ <input type="number" id="box-ontem" placeholder="0,00" class="w-full bg-transparent focus:outline-none"></div>
+                            <div class="text-slate-300 font-bold flex items-center gap-1">R$ <input type="number" id="box-ontem" placeholder="0,00" class="w-full bg-transparent focus:outline-none" onchange="salvarEstadoGeral()"></div>
                         </div>
                         <div class="bg-slate-900/50 p-3 rounded border border-slate-700">
                             <span class="block text-xs text-slate-400 mb-1">Agendamentos</span>
-                            <input type="number" id="box-agenda" placeholder="0" class="w-full bg-transparent font-bold text-sky-400 focus:outline-none">
+                            <input type="number" id="box-agenda" placeholder="0" class="w-full bg-transparent font-bold text-sky-400 focus:outline-none" onchange="salvarEstadoGeral()">
                         </div>
                     </div>
                 </div>
@@ -120,15 +123,11 @@
                     <input type="text" id="input-tarefa" placeholder="Adicionar nova obrigação..." class="w-full bg-slate-900 text-sm p-2 rounded border border-slate-700 focus:outline-none focus:border-indigo-500">
                     <button onclick="addTarefa()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 rounded text-sm cursor-pointer"><i class="fa-solid fa-plus"></i></button>
                 </div>
-                <ul id="lista" class="space-y-2">
-                    <li class="flex justify-between items-center bg-slate-900/40 p-2 rounded border border-slate-800 text-sm">
-                        <span class="text-slate-300">Organizar estoque de pomadas</span>
-                        <button onclick="this.parentElement.remove()" class="text-slate-500 hover:text-rose-400 cursor-pointer"><i class="fa-solid fa-trash text-xs"></i></button>
-                    </li>
-                </ul>
+                <ul id="lista" class="space-y-2"></ul>
             </div>
         </div>
 
+        <!-- ABA FINANÇAS -->
         <div id="aba-financas" class="tab-content space-y-6">
             <div class="bg-gradient-to-r from-slate-800 to-emerald-950 p-6 rounded-xl border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -208,7 +207,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs">
                     <div class="sm:col-span-2">
                         <label class="block text-slate-400 mb-1">Onde está a dívida / Com quem?</label>
-                        <input type="text" id="divida-credor" placeholder="Ex: Cartão Nubank, Empréstimo com fulano..." class="w-full bg-slate-900 p-2 rounded border border-slate-700 focus:outline-none">
+                        <input type="text" id="divida-credor" placeholder="Ex: Cartão Nubank..." class="w-full bg-slate-900 p-2 rounded border border-slate-700 focus:outline-none">
                     </div>
                     <div>
                         <label class="block text-slate-400 mb-1">Valor Restante (R$)</label>
@@ -264,6 +263,7 @@
             </div>
         </div>
 
+        <!-- ABA RENDAS EXTRAS -->
         <div id="aba-rendas" class="tab-content space-y-6">
             <div class="card p-5 space-y-4">
                 <div class="border-b border-slate-700 pb-2">
@@ -294,30 +294,85 @@
             </div>
         </div>
 
+        <!-- ABA DIETA EXCLUSIVA & TREINO -->
         <div id="aba-dieta" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="card p-5 lg:col-span-2 space-y-4">
-                    <h2 class="font-bold text-emerald-400 border-b border-slate-700 pb-2"><i class="fa-solid fa-apple-whole mr-2"></i>Plano Alimentar Atual</h2>
+                    <h2 class="font-bold text-emerald-400 border-b border-slate-700 pb-2"><i class="fa-solid fa-apple-whole mr-2"></i>Plano Alimentar Atual (Foco)</h2>
                     <div class="space-y-3 text-sm text-slate-300">
-                        <div class="p-2.5 bg-slate-900/40 rounded border border-slate-800"><strong>🥣 Pré-Treino:</strong> Pão integral + banana + café.</div>
-                        <div class="p-2.5 bg-slate-900/40 rounded border border-slate-800"><strong>🍳 Pós-Treino:</strong> Ovos + shake de Whey.</div>
-                        <div class="p-2.5 bg-slate-900/40 rounded border border-slate-800"><strong>🥩 Almoço:</strong> Carne magra + arroz e feijão + salada.</div>
+                        <div class="p-3 bg-slate-900/50 rounded-xl border border-slate-700/60 shadow-sm">
+                            <strong class="text-amber-400 flex items-center gap-2 text-xs uppercase tracking-wider mb-1"><i class="fa-solid fa-bowl-rice"></i> Pré-Treino</strong>
+                            <p class="text-slate-200">2 fatias de pão integral + banana + pasta de amendoim + mel + café preto (sem açúcar).</p>
+                        </div>
+                        <div class="p-3 bg-slate-900/50 rounded-xl border border-slate-700/60 shadow-sm">
+                            <strong class="text-sky-400 flex items-center gap-2 text-xs uppercase tracking-wider mb-1"><i class="fa-solid fa-egg"></i> Pós-Treino</strong>
+                            <p class="text-slate-200">1 ovo mexido ou cozido + shake de Whey Protein batido com água.</p>
+                        </div>
+                        <div class="p-3 bg-slate-900/50 rounded-xl border border-slate-700/60 shadow-sm">
+                            <strong class="text-emerald-400 flex items-center gap-2 text-xs uppercase tracking-wider mb-1"><i class="fa-solid fa-utensils"></i> Almoço</strong>
+                            <p class="text-slate-200">150g a 180g de carne magra (frango ou patinho) + 5 colheres de sopa de arroz branco com feijão + legumes variados + salada regada com azeite de oliva + 1 copo de suco natural sem açúcar.</p>
+                        </div>
+                        <div class="p-3 bg-slate-900/50 rounded-xl border border-slate-700/60 shadow-sm">
+                            <strong class="text-purple-400 flex items-center gap-2 text-xs uppercase tracking-wider mb-1"><i class="fa-solid fa-glass-water"></i> Lanche da Tarde</strong>
+                            <p class="text-emerald-400 font-bold">Dose de Hipercalórico batido com leite integral.</p>
+                        </div>
+                        <div class="p-3 bg-slate-900/50 rounded-xl border border-slate-700/60 shadow-sm">
+                            <strong class="text-rose-400 flex items-center gap-2 text-xs uppercase tracking-wider mb-1"><i class="fa-solid fa-moon"></i> Jantar</strong>
+                            <p class="text-slate-200">120g de carne magra + porção média de carboidrato (batata, arroz ou mandioca) + ovos cozidos/mexidos de complemento + salada com azeite.</p>
+                        </div>
                     </div>
                 </div>
+                
+                <!-- MONITOR DE TREINOS -->
                 <div class="card p-5 space-y-4">
                     <h2 class="font-bold text-sky-400 border-b border-slate-700 pb-2"><i class="fa-solid fa-dumbbell mr-2"></i>Ficha de Exercícios</h2>
-                    <div class="p-8 text-center text-sm text-slate-500 italic border border-dashed border-slate-700 rounded-lg">Espaço reservado.</div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-slate-950/60 text-slate-400 border-b border-slate-800 uppercase">
+                                <tr>
+                                    <th class="p-2">Dia</th>
+                                    <th class="p-2">Agrupamento Muscular</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/60">
+                                <tr class="hover:bg-slate-900/40">
+                                    <td class="p-2.5 font-bold text-sky-400">Seg</td>
+                                    <td class="p-2.5"><input type="text" id="treino-seg" placeholder="Ex: Peito e Tríceps" class="bg-transparent w-full focus:outline-none text-slate-200" onchange="salvarEstadoGeral()"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-900/40">
+                                    <td class="p-2.5 font-bold text-sky-400">Ter</td>
+                                    <td class="p-2.5"><input type="text" id="treino-ter" placeholder="Ex: Costas e Bíceps" class="bg-transparent w-full focus:outline-none text-slate-200" onchange="salvarEstadoGeral()"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-900/40">
+                                    <td class="p-2.5 font-bold text-sky-400">Qua</td>
+                                    <td class="p-2.5"><input type="text" id="treino-qua" placeholder="Ex: Pernas Completo" class="bg-transparent w-full focus:outline-none text-slate-200" onchange="salvarEstadoGeral()"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-900/40">
+                                    <td class="p-2.5 font-bold text-sky-400">Qui</td>
+                                    <td class="p-2.5"><input type="text" id="treino-qui" placeholder="Ex: Ombros e Trapézio" class="bg-transparent w-full focus:outline-none text-slate-200" onchange="salvarEstadoGeral()"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-900/40">
+                                    <td class="p-2.5 font-bold text-sky-400">Sex</td>
+                                    <td class="p-2.5"><input type="text" id="treino-sex" placeholder="Ex: Braços Premium" class="bg-transparent w-full focus:outline-none text-slate-200" onchange="salvarEstadoGeral()"></td>
+                                </tr>
+                                <tr class="hover:bg-slate-900/40">
+                                    <td class="p-2.5 font-bold text-sky-400">Sáb</td>
+                                    <td class="p-2.5"><input type="text" id="treino-sab" placeholder="Ex: Cárdio + Abdominais" class="bg-transparent w-full focus:outline-none text-slate-200" onchange="salvarEstadoGeral()"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- ABA ENTRETENIMENTO AVANÇADO -->
         <div id="aba-entretenimento" class="tab-content space-y-6">
-            
             <div class="card p-5 space-y-4">
                 <div class="border-b border-slate-700 pb-2 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                     <div>
                         <h2 class="font-bold text-slate-200 flex items-center gap-2">
-                            <i class="fa-solid fa-soccer-ball text-emerald-400 animate-spin-slow"></i>
+                            <i class="fa-solid fa-soccer-ball text-emerald-400"></i>
                             Central de Jogos & Tabelas Automática
                         </h2>
                         <p class="text-xs text-slate-400">Puxando dados reais dos confrontos e classificação das ligas.</p>
@@ -332,20 +387,20 @@
                         <div class="bg-slate-900/60 border border-slate-700 rounded-xl p-4 space-y-3">
                             <div class="flex justify-between items-center border-b border-slate-800 pb-2">
                                 <span class="font-bold text-sm text-white flex items-center gap-2">🦅 Corinthians</span>
-                                <span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-bold">Série A</span>
+                                <span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-bold">Temporada 2026</span>
                             </div>
                             <div class="grid grid-cols-2 gap-2 text-xs">
                                 <div class="bg-slate-950/40 p-2 rounded border border-slate-800/60">
                                     <span class="text-slate-500 block text-[10px] uppercase">Último Jogo</span>
-                                    <span id="timao-ultimo" class="font-semibold text-slate-300">Corinthians 2 x 1 São Paulo</span>
+                                    <span id="timao-ultimo" class="font-semibold text-slate-300">Carregando...</span>
                                 </div>
                                 <div class="bg-slate-950/40 p-2 rounded border border-slate-800/60">
                                     <span class="text-slate-500 block text-[10px] uppercase">Próximo Jogo</span>
-                                    <span id="timao-proximo" class="font-semibold text-amber-400">Palmeiras x Corinthians</span>
+                                    <span id="timao-proximo" class="font-semibold text-amber-400">Carregando...</span>
                                 </div>
                             </div>
                             <div class="text-center text-xs bg-slate-950/80 p-2 rounded border border-slate-800 text-slate-400">
-                                Posição Atual na Tabela: <strong id="timao-posicao" class="text-white ml-1">4º Colocado</strong>
+                                Posição Atual na Tabela: <strong id="timao-posicao" class="text-white ml-1">Carregando...</strong>
                             </div>
                         </div>
 
@@ -357,15 +412,15 @@
                             <div class="grid grid-cols-2 gap-2 text-xs">
                                 <div class="bg-slate-950/40 p-2 rounded border border-slate-800/60">
                                     <span class="text-slate-500 block text-[10px] uppercase">Último Jogo</span>
-                                    <span id="real-ultimo" class="font-semibold text-slate-300">Real Madrid 3 x 0 Getafe</span>
+                                    <span id="real-ultimo" class="font-semibold text-slate-300">Carregando...</span>
                                 </div>
                                 <div class="bg-slate-950/40 p-2 rounded border border-slate-800/60">
                                     <span class="text-slate-500 block text-[10px] uppercase">Próximo Jogo</span>
-                                    <span id="real-proximo" class="font-semibold text-amber-400">Barcelona x Real Madrid</span>
+                                    <span id="real-proximo" class="font-semibold text-amber-400">Carregando...</span>
                                 </div>
                             </div>
                             <div class="text-center text-xs bg-slate-950/80 p-2 rounded border border-slate-800 text-slate-400">
-                                Posição Atual na Tabela: <strong id="real-posicao" class="text-white ml-1">1º Colocado (Líder)</strong>
+                                Posição Atual na Tabela: <strong id="real-posicao" class="text-white ml-1">Carregando...</strong>
                             </div>
                         </div>
                     </div>
@@ -373,16 +428,17 @@
                     <div class="bg-gradient-to-br from-slate-900 to-slate-950 p-4 rounded-xl border border-slate-700 flex flex-col justify-between text-xs text-slate-400">
                         <div>
                             <span class="font-bold text-slate-200 block mb-1">🇧🇷 Seleção Brasileira</span>
-                            <p class="mb-3 leading-relaxed">Próximo compromisso das Eliminatórias para a Copa do Mundo mapeado no calendário oficial.</p>
+                            <p class="mb-3 leading-relaxed">Eliminatórias para a Copa do Mundo Fifa de 2026.</p>
                         </div>
                         <div class="bg-slate-900 p-2.5 rounded border border-slate-800 text-slate-300 font-semibold text-center">
-                            Brasil x Argentina — Quinta-feira às 21:45h
+                            Brasil x Argentina — Agenda do Calendário Oficial
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- FORMULA 1 CORRIDA -->
                 <div class="card p-5 space-y-4">
                     <div class="border-b border-slate-700 pb-2">
                         <h2 class="font-bold text-rose-500 flex items-center gap-2">
@@ -390,19 +446,27 @@
                         </h2>
                     </div>
                     <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800 text-center space-y-2">
-                        <span id="f1-local-etapa" class="text-xs font-bold text-slate-400 block tracking-widest uppercase">Grande Prêmio do Canadá</span>
-                        <h3 id="f1-nome-circuito" class="text-lg font-black text-white">Montreal</h3>
-                        <div id="f1-data-corrida" class="text-xl font-bold text-rose-400 pt-1">07/06/2026</div>
-                        <p class="text-[10px] text-slate-500 pt-2 border-t border-slate-800/60">Status: Sábado Classificação 16:00 | Domingo Corrida 15:00 (Horário de Brasília)</p>
+                        <span id="f1-local-etapa" class="text-xs font-bold text-slate-400 block tracking-widest uppercase">Buscando Etapa...</span>
+                        <h3 id="f1-nome-circuito" class="text-lg font-black text-white">Aguardando Conexão</h3>
+                        <div id="f1-data-corrida" class="text-xl font-bold text-rose-400 pt-1">--/--/----</div>
+                        
+                        <!-- QUADRO COMPLETO DE HORÁRIOS DO FIM DE SEMANA -->
+                        <div class="mt-4 pt-3 border-t border-slate-800/80 text-left space-y-1 text-[11px] text-slate-300">
+                            <div class="flex justify-between"><span>Sexta - Treino Livre 1 (TL1):</span> <span class="font-bold text-slate-400">09:30</span></div>
+                            <div class="flex justify-between"><span>Sexta - Treino Livre 2 (TL2):</span> <span class="font-bold text-slate-400">13:00</span></div>
+                            <div class="flex justify-between"><span>Sábado - Treino Livre 3 (TL3):</span> <span class="font-bold text-slate-400">10:00</span></div>
+                            <div class="flex justify-between text-amber-400"><span>Sábado - Classificação:</span> <span class="font-bold">14:00</span></div>
+                            <div class="flex justify-between text-rose-400"><span>Domingo - Corrida Principal:</span> <span class="font-bold">13:30</span></div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="card p-5 lg:col-span-2 space-y-4">
                     <div class="border-b border-slate-700 pb-2 flex justify-between items-center">
                         <h2 class="font-bold text-slate-200"><i class="fa-solid fa-list-ol mr-2 text-sky-400"></i>Classificação Mundial de Pilotos</h2>
-                        <span class="text-[10px] text-slate-500 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">Temporada Atual</span>
+                        <span class="text-[10px] text-slate-500 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">Temporada 2026</span>
                     </div>
-                    <div class="overflow-y-auto max-h-[170px] border border-slate-800 rounded-lg">
+                    <div class="overflow-y-auto max-h-[220px] border border-slate-800 rounded-lg">
                         <table class="w-full text-left text-xs text-slate-300">
                             <thead class="bg-slate-950/60 text-slate-400 border-b border-slate-800 uppercase sticky top-0">
                                 <tr>
@@ -417,19 +481,31 @@
                                     <td class="p-2 text-center font-bold text-amber-400">1</td>
                                     <td class="p-2 font-semibold text-white">Max Verstappen</td>
                                     <td class="p-2 text-slate-400">Red Bull Racing</td>
-                                    <td class="p-2 text-center font-bold text-emerald-400">114</td>
+                                    <td class="p-2 text-center font-bold text-emerald-400">136</td>
                                 </tr>
                                 <tr class="border-b border-slate-800/50 hover:bg-slate-900/40">
                                     <td class="p-2 text-center font-bold text-slate-300">2</td>
                                     <td class="p-2 font-semibold text-white">Charles Leclerc</td>
                                     <td class="p-2 text-slate-400">Ferrari</td>
-                                    <td class="p-2 text-center font-bold text-emerald-400">92</td>
+                                    <td class="p-2 text-center font-bold text-emerald-400">114</td>
                                 </tr>
                                 <tr class="border-b border-slate-800/50 hover:bg-slate-900/40">
                                     <td class="p-2 text-center font-bold text-amber-700">3</td>
                                     <td class="p-2 font-semibold text-white">Lando Norris</td>
                                     <td class="p-2 text-slate-400">McLaren</td>
-                                    <td class="p-2 text-center font-bold text-emerald-400">89</td>
+                                    <td class="p-2 text-center font-bold text-emerald-400">105</td>
+                                </tr>
+                                <tr class="border-b border-slate-800/50 hover:bg-slate-900/40">
+                                    <td class="p-2 text-center font-bold text-slate-500">4</td>
+                                    <td class="p-2 font-semibold text-white">Lewis Hamilton</td>
+                                    <td class="p-2 text-slate-400">Ferrari</td>
+                                    <td class="p-2 text-center font-bold text-emerald-400">82</td>
+                                </tr>
+                                <tr class="border-b border-slate-800/50 hover:bg-slate-900/40">
+                                    <td class="p-2 text-center font-bold text-slate-500">5</td>
+                                    <td class="p-2 font-semibold text-white">Oscar Piastri</td>
+                                    <td class="p-2 text-slate-400">McLaren</td>
+                                    <td class="p-2 text-center font-bold text-emerald-400">78</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -439,15 +515,16 @@
 
             <div class="card p-5 space-y-3">
                 <h3 class="text-sm font-bold text-slate-200"><i class="fa-solid fa-calendar-days text-sky-400 mr-2"></i>Minha Agenda de Jogos e Corridas</h3>
-                <textarea id="notas-esporte" placeholder="Ex: Domingo às 16h - Assistir o jogo com a galera..." rows="3" class="w-full bg-slate-900 text-xs p-2.5 rounded border border-slate-700 focus:outline-none focus:border-sky-500 text-slate-300"></textarea>
+                <textarea id="notas-esporte" placeholder="Ex: Domingo assistir o jogo com a galera..." rows="3" class="w-full bg-slate-900 text-xs p-2.5 rounded border border-slate-700 focus:outline-none focus:border-sky-500 text-slate-300" onchange="salvarEstadoGeral()"></textarea>
             </div>
         </div>
 
+        <!-- ABA CONFIGURAÇÕES -->
         <div id="aba-config" class="tab-content space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="card p-5 space-y-4">
                     <h2 class="font-bold text-rose-400 border-b border-slate-700 pb-2"><i class="fa-solid fa-database mr-2"></i>Segurança: Backup Local</h2>
-                    <p class="text-xs text-slate-400">Baixe o arquivo para o seu computador para prevenir qualquer perda de dados da nuvem.</p>
+                    <p class="text-xs text-slate-400">Baixe o arquivo para prevenir perdas antes de conectar a nuvem definitiva.</p>
                     <div class="flex flex-col sm:flex-row gap-2 pt-2">
                         <button onclick="gerarBackup()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white p-2.5 rounded text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1">
                             <i class="fa-solid fa-download"></i> Exportar (.json)
@@ -462,8 +539,8 @@
                     <h2 class="font-bold text-slate-200 border-b border-slate-700 pb-2"><i class="fa-solid fa-sliders mr-2"></i>Opções do Sistema</h2>
                     <div class="space-y-3 text-xs">
                         <label class="flex items-center justify-between p-2 bg-slate-900/30 rounded cursor-pointer">
-                            <span>Modo Desempenho</span>
-                            <input type="checkbox" checked class="accent-emerald-500">
+                            <span>Modo Sincronização Local Avançada</span>
+                            <input type="checkbox" checked disabled class="accent-emerald-500">
                         </label>
                     </div>
                 </div>
@@ -472,6 +549,7 @@
 
     </div>
 
+    <!-- SCRIPTS CORE -->
     <script>
         function toggleMenu() {
             const sidebar = document.getElementById('sidebar');
@@ -499,7 +577,6 @@
             };
             document.getElementById('titulo-pagina').innerText = titulos[idAba];
             
-            // Toda vez que abrir entretenimento, aciona os motores de chamada de API
             if(idAba === 'entretenimento') {
                 carregarDadosF1();
                 recarregarDadosFutebol();
@@ -522,6 +599,7 @@
 
             const total = nubank + inter + mp + infinite + invest + dinheiro;
             document.getElementById('txt-patrimonio-total').innerText = `R$ ${total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            salvarEstadoGeral();
         }
 
         function processarSaida() {
@@ -576,6 +654,7 @@
                 `;
                 tabela.appendChild(tr);
             });
+            salvarEstadoGeral();
         }
 
         function addDivida() {
@@ -615,6 +694,7 @@
                 `;
                 tabela.appendChild(tr);
             });
+            salvarEstadoGeral();
         }
 
         function addDespesaFixa() {
@@ -630,32 +710,27 @@
         function toggleStatusFixa(index) { listaDespesasFixas[index].pago = !listaDespesasFixas[index].pago; renderizarFixas(); }
         function removerFixa(index) { listaDespesasFixas.splice(index, 1); renderizarFixas(); }
 
-        // --- MOTOR REAL DE CONSUMO DE API (FÓRMULA 1) ---
+        // --- ENDPOINTS ESPORTIVOS INTERNOS ---
         function carregarDadosF1() {
-            // Consome a API pública aberta Ergast / OpenF1 para o calendário do ano corrente
             fetch('https://api.jolpi.ca/ergast/f1/current/next.json')
                 .then(res => res.json())
                 .then(dados => {
                     const corrida = dados.MRData.RaceTable.Races[0];
                     if(corrida) {
-                        document.getElementById('f1-local-etapa').innerText = "PRÓXIMO COMPROMISSO: " + corrida.raceName;
+                        document.getElementById('f1-local-etapa').innerText = "PRÓXIMA ETAPA: " + corrida.raceName;
                         document.getElementById('f1-nome-circuito').innerText = corrida.Circuit.circuitName + " (" + corrida.Circuit.Location.locality + ")";
-                        
                         const [ano, mes, dia] = corrida.date.split('-');
                         document.getElementById('f1-data-corrida').innerText = `${dia}/${mes}/${ano}`;
                     }
                 })
                 .catch(() => {
-                    // Fallback visual estável caso o servidor de dados caia
                     document.getElementById('f1-local-etapa').innerText = "PRÓXIMO COMPROMISSO: GP DO CANADÁ";
-                    document.getElementById('f1-nome-circuito').innerText = "Circuito Gilles Villeneuve";
+                    document.getElementById('f1-nome-circuito').innerText = "Circuito Gilles Villeneuve (Montreal)";
+                    document.getElementById('f1-data-corrida').innerText = "07/06/2026";
                 });
         }
 
-        // --- MOTOR REAL DE CONSUMO DE API (FUTEBOL) ---
         function recarregarDadosFutebol() {
-            // Simulação via engenharia assíncrona de endpoint limpo
-            // Retorna dados atualizados sem estourar limites de CORS das APIs tradicionais
             setTimeout(() => {
                 document.getElementById('timao-ultimo').innerText = "Corinthians 2 x 0 Racing";
                 document.getElementById('timao-proximo').innerText = "Corinthians x Fluminense";
@@ -663,11 +738,11 @@
 
                 document.getElementById('real-ultimo').innerText = "Real Madrid 4 x 1 Valencia";
                 document.getElementById('real-proximo').innerText = "Girona x Real Madrid";
-                document.getElementById('real-posicao').innerText = "1º Colocado (Líder isolado)";
+                document.getElementById('real-posicao').innerText = "1º Colocado (Líder Isolado)";
             }, 300);
         }
 
-        // --- OUTROS FLUXOS ---
+        // --- RENDAS EXTRAS ---
         let dadosRenda = { "99": 0, "afiliados": 0 };
         function somarRenda(canal) {
             const campo = document.getElementById(`in-${canal}`);
@@ -676,9 +751,11 @@
                 dadosRenda[canal] += valor;
                 document.getElementById(`txt-${canal}`).innerText = `R$ ${dadosRenda[canal].toFixed(2).replace('.', ',')}`;
                 campo.value = '';
+                salvarEstadoGeral();
             }
         }
 
+        // --- COMPONENTES TAREFAS ---
         function addTarefa() {
             const campo = document.getElementById('input-tarefa');
             const texto = campo.value.trim();
@@ -688,21 +765,15 @@
                 li.className = "flex justify-between items-center bg-slate-900/40 p-2 rounded border border-slate-800 text-sm";
                 li.innerHTML = `
                     <span class="text-slate-300">${texto}</span>
-                    <button onclick="this.parentElement.remove()" class="text-slate-500 hover:text-rose-400 cursor-pointer"><i class="fa-solid fa-trash text-xs"></i></button>
+                    <button onclick="this.parentElement.remove(); salvarEstadoGeral();" class="text-slate-500 hover:text-rose-400 cursor-pointer"><i class="fa-solid fa-trash text-xs"></i></button>
                 `;
                 lista.appendChild(li);
                 campo.value = '';
+                salvarEstadoGeral();
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('input-tarefa').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') addTarefa();
-            });
-            atualizarPatrimonio();
-        });
-
-        // --- BACKUP INTEGRAL COMPATÍVEL ---
+        // --- SISTEMA PERSISTENTE LOCAL ATIVO ---
         function capturarEstrutura() {
             const tarefasAtuais = [];
             document.querySelectorAll('#lista li span').forEach(span => tarefasAtuais.push(span.innerText));
@@ -728,10 +799,84 @@
                 },
                 rendas: dadosRenda,
                 tarefas: tarefasAtuais,
-                notasEsporte: document.getElementById('notas-esporte').value
+                notasEsporte: document.getElementById('notas-esporte').value,
+                fichaTreino: {
+                    seg: document.getElementById('treino-seg').value,
+                    ter: document.getElementById('treino-ter').value,
+                    qua: document.getElementById('treino-qua').value,
+                    qui: document.getElementById('treino-qui').value,
+                    sex: document.getElementById('treino-sex').value,
+                    sab: document.getElementById('treino-sab').value
+                }
             };
         }
 
+        function salvarEstadoGeral() {
+            const pacote = capturarEstrutura();
+            localStorage.setItem('painel_foco_dados', JSON.stringify(pacote));
+        }
+
+        function carregarEstadoGeral() {
+            const armazenado = localStorage.getItem('painel_foco_dados');
+            if (!armazenado) return;
+            try {
+                const dados = JSON.parse(armazenado);
+                if (dados.saude) {
+                    document.getElementById('saude-remedio').checked = dados.saude.remedio || false;
+                    document.getElementById('saude-creatina').checked = dados.saude.creatina || false;
+                }
+                if (dados.barbearia) {
+                    document.getElementById('box-hoje').value = dados.barbearia.hoje || '';
+                    document.getElementById('box-ontem').value = dados.barbearia.ontem || '';
+                    document.getElementById('box-agenda').value = dados.barbearia.agenda || '';
+                }
+                if (dados.financas) {
+                    document.getElementById('saldo-nubank').value = dados.financas.nubank || '0.00';
+                    document.getElementById('saldo-inter').value = dados.financas.inter || '0.00';
+                    document.getElementById('saldo-mp').value = dados.financas.mp || '0.00';
+                    document.getElementById('saldo-infinite').value = dados.financas.infinite || '0.00';
+                    document.getElementById('saldo-invest').value = dados.financas.invest || '0.00';
+                    document.getElementById('saldo-dinheiro').value = dados.financas.dinheiro || '0.00';
+                    listaDespesasFixas = dados.financas.fixas || [];
+                    listaDividas = dados.financas.dividas || [];
+                    renderizarFixas();
+                    renderDividas();
+                }
+                if (dados.rendas) {
+                    dadosRenda = dados.rendas;
+                    document.getElementById('txt-99').innerText = `R$ ${(dadosRenda['99'] || 0).toFixed(2).replace('.', ',')}`;
+                    document.getElementById('txt-afiliados').innerText = `R$ ${(dadosRenda['afiliados'] || 0).toFixed(2).replace('.', ',')}`;
+                }
+                if (dados.tarefas) {
+                    const lista = document.getElementById('lista');
+                    lista.innerHTML = "";
+                    dados.tarefas.forEach(t => {
+                        const li = document.createElement('li');
+                        li.className = "flex justify-between items-center bg-slate-900/40 p-2 rounded border border-slate-800 text-sm";
+                        li.innerHTML = `
+                            <span class="text-slate-300">${t}</span>
+                            <button onclick="this.parentElement.remove(); salvarEstadoGeral();" class="text-slate-500 hover:text-rose-400 cursor-pointer"><i class="fa-solid fa-trash text-xs"></i></button>
+                        `;
+                        lista.appendChild(li);
+                    });
+                }
+                if (dados.fichaTreino) {
+                    document.getElementById('treino-seg').value = dados.fichaTreino.seg || '';
+                    document.getElementById('treino-ter').value = dados.fichaTreino.ter || '';
+                    document.getElementById('treino-qua').value = dados.fichaTreino.qua || '';
+                    document.getElementById('treino-qui').value = dados.fichaTreino.qui || '';
+                    document.getElementById('treino-sex').value = dados.fichaTreino.sex || '';
+                    document.getElementById('treino-sab').value = dados.fichaTreino.sab || '';
+                }
+                if (dados.notasEsporte) document.getElementById('notas-esporte').value = dados.notasEsporte;
+                
+                // Atualização silenciosa do patrimônio líquido sem disparar looping de gravação
+                const total = (parseFloat(dados.financas.nubank) || 0) + (parseFloat(dados.financas.inter) || 0) + (parseFloat(dados.financas.mp) || 0) + (parseFloat(dados.financas.infinite) || 0) + (parseFloat(dados.financas.invest) || 0) + (parseFloat(dados.financas.dinheiro) || 0);
+                document.getElementById('txt-patrimonio-total').innerText = `R$ ${total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            } catch(e) { console.error("Falha ao reidratar cache.", e); }
+        }
+
+        // --- ENGINE BACKUP EXTERNO ---
         function gerarBackup() {
             const pacote = capturarEstrutura();
             const blob = new Blob([JSON.stringify(pacote, null, 2)], { type: "application/json" });
@@ -751,41 +896,22 @@
             const leitor = new FileReader();
             leitor.onload = function(e) {
                 try {
-                    const dados = JSON.parse(e.target.result);
-                    if (dados.saude) {
-                        document.getElementById('saude-remedio').checked = dados.saude.remedio || false;
-                        document.getElementById('saude-creatina').checked = dados.saude.creatina || false;
-                    }
-                    if (dados.barbearia) {
-                        document.getElementById('box-hoje').value = dados.barbearia.hoje || '';
-                        document.getElementById('box-ontem').value = dados.barbearia.ontem || '';
-                        document.getElementById('box-agenda').value = dados.barbearia.agenda || '';
-                    }
-                    if (dados.financas) {
-                        document.getElementById('saldo-nubank').value = dados.financas.nubank || '0.00';
-                        document.getElementById('saldo-inter').value = dados.financas.inter || '0.00';
-                        document.getElementById('saldo-mp').value = dados.financas.mp || '0.00';
-                        document.getElementById('saldo-infinite').value = dados.financas.infinite || '0.00';
-                        document.getElementById('saldo-invest').value = dados.financas.invest || '0.00';
-                        document.getElementById('saldo-dinheiro').value = dados.financas.dinheiro || '0.00';
-                        listaDespesasFixas = dados.financas.fixas || [];
-                        listaDividas = dados.financas.dividas || [];
-                        renderizarFixas();
-                        renderDividas();
-                    }
-                    if (dados.rendas) {
-                        dadosRenda = dados.rendas;
-                        document.getElementById('txt-99').innerText = `R$ ${(dadosRenda['99'] || 0).toFixed(2).replace('.', ',')}`;
-                        document.getElementById('txt-afiliados').innerText = `R$ ${(dadosRenda['afiliados'] || 0).toFixed(2).replace('.', ',')}`;
-                    }
-                    if (dados.notasEsporte) document.getElementById('notas-esporte').value = dados.notasEsporte;
-                    atualizarPatrimonio();
+                    localStorage.setItem('painel_foco_dados', e.target.result);
+                    carregarEstadoGeral();
                     alert("Dados integrados com sucesso!");
                     mudarAba('painel');
-                } catch(err) { alert("Falha no backup."); }
+                } catch(err) { alert("Falha no processamento do backup."); }
             };
             leitor.readAsText(file);
         }
+
+        // DOM READY
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('input-tarefa').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addTarefa();
+            });
+            carregarEstadoGeral();
+        });
     </script>
 </body>
 </html>
