@@ -438,26 +438,35 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- FORMULA 1 CORRIDA -->
-                <div class="card p-5 space-y-4">
-                    <div class="border-b border-slate-700 pb-2">
-                        <h2 class="font-bold text-rose-500 flex items-center gap-2">
-                            <i class="fa-solid fa-flag-checkered text-white"></i> Próxima Corrida (F1)
-                        </h2>
-                    </div>
-                    <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800 text-center space-y-2">
-                        <span id="f1-local-etapa" class="text-xs font-bold text-slate-400 block tracking-widest uppercase">Buscando Etapa...</span>
-                        <h3 id="f1-nome-circuito" class="text-lg font-black text-white">Aguardando Conexão</h3>
-                        <div id="f1-data-corrida" class="text-xl font-bold text-rose-400 pt-1">--/--/----</div>
-                        
-                        <!-- QUADRO COMPLETO DE HORÁRIOS DO FIM DE SEMANA -->
-                        <div class="mt-4 pt-3 border-t border-slate-800/80 text-left space-y-1 text-[11px] text-slate-300">
-                            <div class="flex justify-between"><span>Sexta - Treino Livre 1 (TL1):</span> <span class="font-bold text-slate-400">09:30</span></div>
-                            <div class="flex justify-between"><span>Sexta - Treino Livre 2 (TL2):</span> <span class="font-bold text-slate-400">13:00</span></div>
-                            <div class="flex justify-between"><span>Sábado - Treino Livre 3 (TL3):</span> <span class="font-bold text-slate-400">10:00</span></div>
-                            <div class="flex justify-between text-amber-400"><span>Sábado - Classificação:</span> <span class="font-bold">14:00</span></div>
-                            <div class="flex justify-between text-rose-400"><span>Domingo - Corrida Principal:</span> <span class="font-bold">13:30</span></div>
+                <!-- FORMULA 1 CORRIDA (MÓDULO API ATUALIZADO) -->
+                <div class="card p-5 space-y-4 flex flex-col justify-between">
+                    <div>
+                        <div class="border-b border-slate-700 pb-2">
+                            <h2 class="font-bold text-rose-500 flex items-center gap-2">
+                                <i class="fa-solid fa-flag-checkered text-white"></i> Próxima Corrida (F1)
+                            </h2>
                         </div>
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800 text-center space-y-2 mt-3">
+                            <span id="f1-local-etapa" class="text-xs font-bold text-slate-400 block tracking-widest uppercase">Buscando Etapa...</span>
+                            <h3 id="f1-nome-circuito" class="text-lg font-black text-white">Aguardando Conexão</h3>
+                            <div id="f1-data-corrida" class="text-xl font-bold text-rose-400 pt-1">--/--/----</div>
+                            
+                            <!-- QUADRO COMPLETO DE HORÁRIOS DO FIM DE SEMANA -->
+                            <div class="mt-4 pt-3 border-t border-slate-800/80 text-left space-y-1 text-[11px] text-slate-300">
+                                <div class="flex justify-between"><span>Sexta - Treino Livre 1 (TL1):</span> <span class="font-bold text-slate-400">09:30</span></div>
+                                <div class="flex justify-between"><span>Sexta - Treino Livre 2 (TL2):</span> <span class="font-bold text-slate-400">13:00</span></div>
+                                <div class="flex justify-between"><span>Sábado - Treino Livre 3 (TL3):</span> <span class="font-bold text-slate-400">10:00</span></div>
+                                <div class="flex justify-between text-amber-400"><span>Sábado - Classificação:</span> <span class="font-bold">14:00</span></div>
+                                <div class="flex justify-between text-rose-400"><span>Domingo - Corrida Principal:</span> <span class="font-bold">13:30</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- LINK DE ACESSO COMPLETO À FONTE DA INFORMAÇÃO -->
+                    <div class="pt-3">
+                        <a id="f1-link-fonte" href="https://jolpi.ca/ergast/" target="_blank" class="w-full flex items-center justify-center gap-2 text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-rose-500 text-slate-200 font-semibold p-2.5 rounded-lg transition duration-200">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Ver Informações Completas no Site
+                        </a>
                     </div>
                 </div>
 
@@ -536,7 +545,7 @@
                     </div>
                 </div>
                 <div class="card p-5 space-y-4">
-                    <h2 class="font-bold text-slate-200 border-b border-slate-700 pb-2"><i class="fa-solid fa-sliders mr-2"></i>Opções do Sistema</h2>
+                    <h2 class="font-bold text-slate-200 border-b border-slate-700 pb-2"><i class="fa-solid fa-sliders mr-2"></i>Opções do System</h2>
                     <div class="space-y-3 text-xs">
                         <label class="flex items-center justify-between p-2 bg-slate-900/30 rounded cursor-pointer">
                             <span>Modo Sincronização Local Avançada</span>
@@ -589,6 +598,7 @@
         let listaDespesasFixas = [];
         let listaDividas = [];
 
+        //[span_3](start_span)[span_3](end_span)
         function atualizarPatrimonio() {
             const nubank = parseFloat(document.getElementById('saldo-nubank').value) || 0;
             const inter = parseFloat(document.getElementById('saldo-inter').value) || 0;
@@ -710,9 +720,10 @@
         function toggleStatusFixa(index) { listaDespesasFixas[index].pago = !listaDespesasFixas[index].pago; renderizarFixas(); }
         function removerFixa(index) { listaDespesasFixas.splice(index, 1); renderizarFixas(); }
 
-        // --- ENDPOINTS ESPORTIVOS INTERNOS ---
+        // --- ENDPOINTS ESPORTIVOS INTERNOS (F1 REESTRUTURADA COM LINK DINÂMICO) ---
         function carregarDadosF1() {
-            fetch('https://api.jolpi.ca/ergast/f1/current/next.json')
+            const urlApi = 'https://api.jolpi.ca/ergast/f1/current/next.json';
+            fetch(urlApi)
                 .then(res => res.json())
                 .then(dados => {
                     const corrida = dados.MRData.RaceTable.Races[0];
@@ -721,12 +732,19 @@
                         document.getElementById('f1-nome-circuito').innerText = corrida.Circuit.circuitName + " (" + corrida.Circuit.Location.locality + ")";
                         const [ano, mes, dia] = corrida.date.split('-');
                         document.getElementById('f1-data-corrida').innerText = `${dia}/${mes}/${ano}`;
+                        
+                        // Configura o link de forma inteligente usando os dados retornados pela API
+                        if (corrida.url) {
+                            document.getElementById('f1-link-fonte').href = corrida.url;
+                        }
                     }
                 })
                 .catch(() => {
+                    // Fallback estrutural seguro
                     document.getElementById('f1-local-etapa').innerText = "PRÓXIMO COMPROMISSO: GP DO CANADÁ";
                     document.getElementById('f1-nome-circuito').innerText = "Circuito Gilles Villeneuve (Montreal)";
                     document.getElementById('f1-data-corrida').innerText = "07/06/2026";
+                    document.getElementById('f1-link-fonte').href = "https://en.wikipedia.org/wiki/2026_Formula_One_World_Championship";
                 });
         }
 
@@ -890,6 +908,7 @@
             URL.revokeObjectURL(url);
         }
 
+        //[span_4](start_span)[span_4](end_span)
         function puxarBackup(event) {
             const file = event.target.files[0];
             if (!file) return;
