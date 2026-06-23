@@ -1052,6 +1052,13 @@
         } catch(e) { console.error('Firebase falhou', e); setSyncStatus('local'); }
     }
 
+    // Carimbo de hora da última alteração local (para "vence o mais recente")
+    function localTs() { return parseInt(localStorage.getItem('painel_foco_ts') || '0', 10) || 0; }
+    function temDadosLocais() {
+        const l = localStorage.getItem('painel_foco_dados');
+        return !!(l && l.length > 2 && l !== '{}');
+    }
+
     async function onAuthMudou(user) {
         usuarioAtual = user;
         const btnEntrar = document.getElementById('btn-entrar');
@@ -1064,17 +1071,32 @@
             setSyncStatus('carregando');
             try {
                 const snap = await fbDb.collection('usuarios').doc(user.uid).get();
-                if (snap.exists && snap.data() && snap.data().payload) {
-                    const nuvem = snap.data().payload;
-                    const local = localStorage.getItem('painel_foco_dados');
-                    if (nuvem !== local) {
-                        localStorage.setItem('painel_foco_dados', nuvem);
-                        location.reload();
-                        return;
-                    }
-                    setSyncStatus('ok');
+                const temNuvem = snap.exists && snap.data() && snap.data().payload && snap.data().payload.length > 2 && snap.data().payload !== '{}';
+                const lts = localTs();
+
+                if (!temNuvem) {
+                    // Nuvem vazia: este aparelho semeia os dados
+                    await salvarNuvem();
                 } else {
-                    await salvarNuvem(); // primeiro acesso: envia o que está local
+                    const nuvem = snap.data().payload;
+                    const cts = snap.data().atualizado || 0;
+                    const local = localStorage.getItem('painel_foco_dados');
+
+                    if (!temDadosLocais()) {
+                        // Aparelho sem dados: puxa da nuvem
+                        aplicarNuvem(nuvem, cts);
+                    } else if (lts === 0) {
+                        // Tem dados locais mas sem carimbo (1º uso deste device): preserva o local e envia
+                        await salvarNuvem();
+                    } else if (cts > lts && nuvem !== local) {
+                        // Nuvem é mais recente: puxa
+                        aplicarNuvem(nuvem, cts);
+                    } else if (nuvem !== local) {
+                        // Local é mais recente: envia
+                        await salvarNuvem();
+                    } else {
+                        setSyncStatus('ok');
+                    }
                 }
             } catch(e) { console.error(e); setSyncStatus('erro'); }
         } else {
@@ -1085,13 +1107,21 @@
         }
     }
 
+    function aplicarNuvem(nuvem, cts) {
+        localStorage.setItem('painel_foco_dados', nuvem);
+        localStorage.setItem('painel_foco_ts', String(cts || Date.now()));
+        location.reload();
+    }
+
     async function salvarNuvem() {
         if (!firebaseDisponivel() || !usuarioAtual) return;
         try {
             setSyncStatus('salvando');
+            const ts = localTs() || Date.now();
+            localStorage.setItem('painel_foco_ts', String(ts));
             await fbDb.collection('usuarios').doc(usuarioAtual.uid).set({
                 payload: localStorage.getItem('painel_foco_dados') || '{}',
-                atualizado: Date.now()
+                atualizado: ts
             });
             setSyncStatus('ok');
         } catch(e) { console.error(e); setSyncStatus('erro'); }
@@ -1725,6 +1755,7 @@
 
     function salvarEstadoGeral() {
         localStorage.setItem('painel_foco_dados', JSON.stringify(capturarEstrutura()));
+        localStorage.setItem('painel_foco_ts', String(Date.now()));
         agendarSyncNuvem();
     }
 
@@ -1784,7 +1815,7 @@
         if (!file) return;
         const leitor = new FileReader();
         leitor.onload = function(e) {
-            try { localStorage.setItem('painel_foco_dados', e.target.result); carregarEstadoGeral(); toast('Dados restaurados com sucesso! ✓'); mudarAba('painel'); }
+            try { localStorage.setItem('painel_foco_dados', e.target.result); localStorage.setItem('painel_foco_ts', String(Date.now())); carregarEstadoGeral(); toast('Dados restaurados com sucesso! ✓'); mudarAba('painel'); }
             catch(_) { toast('Falha no processamento do backup.', 'erro'); }
         };
         leitor.readAsText(file);
