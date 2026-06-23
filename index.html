@@ -108,6 +108,8 @@
         #mini-modal { position:fixed; inset:0; z-index:9998; background:rgba(0,0,0,.65); display:none; align-items:flex-end; justify-content:center; padding:1rem; }
         #mini-modal.show { display:flex; animation:fadeUp .2s ease; }
         #mini-modal-box { background:var(--card); border:1px solid var(--border); border-radius:1rem 1rem 1rem 1rem; padding:1.5rem; width:100%; max-width:360px; box-shadow:0 24px 48px rgba(0,0,0,.7); }
+        .refeicao-input { width:100%; background:transparent; outline:none; border:none; font-size:.75rem; line-height:1.5; color:#cbd5e1; resize:vertical; font-family:'Outfit',sans-serif; }
+        .refeicao-input:focus { color:#f1f5f9; }
     </style>
 </head>
 <body class="min-h-screen flex">
@@ -119,9 +121,7 @@
         <!-- Logo -->
         <div class="flex items-center justify-between mb-6 pb-4" style="border-bottom:1px solid var(--border2)">
             <div class="flex items-center gap-2.5">
-                <div class="h-9 w-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 grid place-items-center">
-                    
-                </div>
+                <div class="h-9 w-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 grid place-items-center">🎯</div>
                 <div>
                     <div class="font-bold text-slate-100 text-sm leading-tight">Painel Foco</div>
                     <div class="text-[10px] text-slate-500 font-medium">Controle Pessoal</div>
@@ -185,7 +185,7 @@
         </div>
         <div class="flex items-center gap-4 text-xs" style="background:var(--card2); border:1px solid var(--border2); border-radius:.75rem; padding:.5rem 1rem;">
             <label class="flex items-center gap-1.5 cursor-pointer text-slate-300 hover:text-slate-100 transition">
-                <input type="checkbox" id="saude-remedio" class="w-3.5 h-3.5 accent-emerald-500" onchange="salvarEstadoGeral(); atualizarResumo()">
+                <input type="checkbox" id="saude-remedio" class="w-3.5 h-3.5 accent-emerald-500" onchange="toggleRemedioHoje()">
                 <span>💊 Remédio</span>
             </label>
             <div style="width:1px; height:16px; background:var(--border)"></div>
@@ -262,13 +262,21 @@
                     <span class="text-base">📈</span>
                     <span class="font-bold text-slate-100 text-sm">Rendas Extras</span>
                 </div>
-                <div class="space-y-2 text-xs">
+                <div class="space-y-1.5 text-xs">
                     <div class="flex justify-between items-center">
-                        <span class="text-slate-400">🚗 99Food</span>
-                        <span id="resumo-99" class="font-bold text-emerald-400">R$ 0,00</span>
+                        <span class="text-slate-400">🛍️ <span id="lblr-radar">Radar Imports</span></span>
+                        <span id="resumo-radar" class="font-bold text-emerald-400">R$ 0,00</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-slate-400">🔗 Afiliados</span>
+                        <span class="text-slate-400">🏀 <span id="lblr-arbitragem">Arbitragem</span></span>
+                        <span id="resumo-arbitragem" class="font-bold text-emerald-400">R$ 0,00</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400">🛵 <span id="lblr-entregas">Entregas</span></span>
+                        <span id="resumo-entregas" class="font-bold text-emerald-400">R$ 0,00</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400">🔗 <span id="lblr-afiliados">Afiliados</span></span>
                         <span id="resumo-afiliados" class="font-bold text-emerald-400">R$ 0,00</span>
                     </div>
                     <div class="flex justify-between items-center pt-1.5" style="border-top:1px solid var(--border2)">
@@ -285,13 +293,13 @@
                     <span class="font-bold text-slate-100 text-sm">Próximos Eventos</span>
                 </div>
                 <div id="resumo-esportes" class="space-y-2 text-xs">
-                    <p class="text-slate-500 italic text-[11px]">Abra a aba Esportes para carregar</p>
+                    <p class="text-slate-500 italic text-[11px]">Carregando eventos...</p>
                 </div>
             </div>
         </div>
 
         <!-- Alertas de vencimento -->
-        <div id="painel-alertas" style="display:none" class="rounded-xl p-4" style="background:rgba(251,191,36,.06); border:1px solid rgba(251,191,36,.25)">
+        <div id="painel-alertas" class="rounded-xl p-4" style="display:none; background:rgba(251,191,36,.06); border:1px solid rgba(251,191,36,.25)">
             <div class="flex items-start gap-2.5">
                 <span class="text-base">⚠️</span>
                 <div>
@@ -509,6 +517,21 @@
             </div>
         </div>
 
+        <!-- Extrato de Saídas -->
+        <div class="card p-5 space-y-4">
+            <div class="flex items-center justify-between pb-3" style="border-bottom:1px solid var(--border2)">
+                <div class="flex items-center gap-2.5">
+                    <div class="h-8 w-8 rounded-lg bg-rose-500/10 border border-rose-500/30 grid place-items-center">🧾</div>
+                    <div>
+                        <h3 class="font-bold text-slate-100 text-sm">Extrato de Saídas</h3>
+                        <p class="text-[10px] text-slate-500">Histórico de gastos · ↩ estorna e devolve o saldo</p>
+                    </div>
+                </div>
+                <span id="extrato-total" class="text-xs font-bold text-rose-400">R$ 0,00</span>
+            </div>
+            <div id="lista-transacoes" class="space-y-2"><p class="text-xs text-slate-500 italic">Nenhuma saída lançada ainda.</p></div>
+        </div>
+
         <!-- Dívidas -->
         <div class="card p-5 space-y-4">
             <div class="flex items-center gap-2.5 pb-3" style="border-bottom:1px solid var(--border2)">
@@ -532,6 +555,17 @@
                 <div>
                     <label class="text-[11px] text-slate-500 block mb-1">Vencimento</label>
                     <input type="date" id="divida-vencimento" class="input-base" style="color-scheme:dark">
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="text-[11px] text-slate-500 block mb-1">Pagar com (ao quitar)</label>
+                    <select id="divida-conta" class="input-base">
+                        <option value="nubank">Nubank</option>
+                        <option value="inter">Banco Inter</option>
+                        <option value="mp">Mercado Pago</option>
+                        <option value="infinite">InfinitePay</option>
+                        <option value="invest">Investimentos</option>
+                        <option value="dinheiro">Dinheiro Vivo</option>
+                    </select>
                 </div>
             </div>
             <button onclick="addDivida()" class="btn-primary" style="background:#b45309">
@@ -562,6 +596,14 @@
             <div class="flex flex-col sm:flex-row gap-2">
                 <input type="text" id="fixa-nome" placeholder="Ex: Aluguel, Internet..." class="input-base flex-1">
                 <input type="number" step="0.01" id="fixa-valor" placeholder="Valor R$" class="input-base sm:w-32">
+                <select id="fixa-conta" class="input-base sm:w-40">
+                    <option value="nubank">Nubank</option>
+                    <option value="inter">Banco Inter</option>
+                    <option value="mp">Mercado Pago</option>
+                    <option value="infinite">InfinitePay</option>
+                    <option value="invest">Investimentos</option>
+                    <option value="dinheiro">Dinheiro Vivo</option>
+                </select>
                 <button onclick="addDespesaFixa()" class="btn-primary whitespace-nowrap" style="background:#4338ca">
                      Adicionar
                 </button>
@@ -602,9 +644,7 @@
     <div id="aba-rendas" class="tab-content space-y-5">
         <div class="card p-5 space-y-4">
             <div class="flex items-center gap-2.5 pb-3" style="border-bottom:1px solid var(--border2)">
-                <div class="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 grid place-items-center">
-                    
-                </div>
+                <div class="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 grid place-items-center">💸</div>
                 <div>
                     <h2 class="font-bold text-slate-100 text-sm">Controle de Rendas Extras</h2>
                     <p class="text-[10px] text-slate-500">Acumule os valores recebidos por canal</p>
@@ -613,34 +653,46 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div class="card2 p-5 space-y-4">
                     <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2.5">
-                            <span class="text-2xl">🚗</span>
-                            <div>
-                                <div class="font-bold text-slate-100 text-sm">Entregas 99Food</div>
-                                <div class="text-[10px] text-slate-500">Total acumulado</div>
-                            </div>
-                        </div>
-                        <span id="txt-99" class="font-black text-emerald-400 text-xl">R$ 0,00</span>
+                        <div class="flex items-center gap-2.5"><span class="text-2xl">🛍️</span><div class="min-w-0"><input id="nome-radar" value="Radar Imports" title="Toque para renomear" onchange="salvarNomeRenda('radar')" class="font-bold text-slate-100 text-sm bg-transparent border-none outline-none w-full"><div class="text-[10px] text-slate-500">Total acumulado</div></div></div>
+                        <span id="txt-radar" class="font-black text-emerald-400 text-xl">R$ 0,00</span>
                     </div>
                     <div class="flex gap-2">
-                        <input type="number" id="in-99" placeholder="Adicionar valor recebido..." class="input-base flex-1">
-                        <button onclick="somarRenda('99')" class="btn-primary px-4">+</button>
+                        <input type="number" id="in-radar" placeholder="Adicionar valor recebido..." class="input-base flex-1" onkeypress="if(event.key==='Enter')somarRenda('radar')">
+                        <button onclick="somarRenda('radar')" class="btn-primary px-4">+</button>
+                        <button onclick="zerarRenda('radar')" title="Zerar acumulado" style="padding:.4rem .65rem;background:var(--card2);border:1px solid var(--border2);border-radius:.5rem;color:#64748b;cursor:pointer">↺</button>
                     </div>
                 </div>
                 <div class="card2 p-5 space-y-4">
                     <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2.5">
-                            <span class="text-2xl">🔗</span>
-                            <div>
-                                <div class="font-bold text-slate-100 text-sm">Links de Afiliados</div>
-                                <div class="text-[10px] text-slate-500">Total acumulado</div>
-                            </div>
-                        </div>
+                        <div class="flex items-center gap-2.5"><span class="text-2xl">🏀</span><div class="min-w-0"><input id="nome-arbitragem" value="Arbitragem" title="Toque para renomear" onchange="salvarNomeRenda('arbitragem')" class="font-bold text-slate-100 text-sm bg-transparent border-none outline-none w-full"><div class="text-[10px] text-slate-500">Total acumulado</div></div></div>
+                        <span id="txt-arbitragem" class="font-black text-emerald-400 text-xl">R$ 0,00</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="number" id="in-arbitragem" placeholder="Adicionar valor recebido..." class="input-base flex-1" onkeypress="if(event.key==='Enter')somarRenda('arbitragem')">
+                        <button onclick="somarRenda('arbitragem')" class="btn-primary px-4">+</button>
+                        <button onclick="zerarRenda('arbitragem')" title="Zerar acumulado" style="padding:.4rem .65rem;background:var(--card2);border:1px solid var(--border2);border-radius:.5rem;color:#64748b;cursor:pointer">↺</button>
+                    </div>
+                </div>
+                <div class="card2 p-5 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2.5"><span class="text-2xl">🛵</span><div class="min-w-0"><input id="nome-entregas" value="Entregas" title="Toque para renomear" onchange="salvarNomeRenda('entregas')" class="font-bold text-slate-100 text-sm bg-transparent border-none outline-none w-full"><div class="text-[10px] text-slate-500">Total acumulado</div></div></div>
+                        <span id="txt-entregas" class="font-black text-emerald-400 text-xl">R$ 0,00</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="number" id="in-entregas" placeholder="Adicionar valor recebido..." class="input-base flex-1" onkeypress="if(event.key==='Enter')somarRenda('entregas')">
+                        <button onclick="somarRenda('entregas')" class="btn-primary px-4">+</button>
+                        <button onclick="zerarRenda('entregas')" title="Zerar acumulado" style="padding:.4rem .65rem;background:var(--card2);border:1px solid var(--border2);border-radius:.5rem;color:#64748b;cursor:pointer">↺</button>
+                    </div>
+                </div>
+                <div class="card2 p-5 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2.5"><span class="text-2xl">🔗</span><div class="min-w-0"><input id="nome-afiliados" value="Links de Afiliados" title="Toque para renomear" onchange="salvarNomeRenda('afiliados')" class="font-bold text-slate-100 text-sm bg-transparent border-none outline-none w-full"><div class="text-[10px] text-slate-500">Total acumulado</div></div></div>
                         <span id="txt-afiliados" class="font-black text-emerald-400 text-xl">R$ 0,00</span>
                     </div>
                     <div class="flex gap-2">
-                        <input type="number" id="in-afiliados" placeholder="Adicionar valor recebido..." class="input-base flex-1">
+                        <input type="number" id="in-afiliados" placeholder="Adicionar valor recebido..." class="input-base flex-1" onkeypress="if(event.key==='Enter')somarRenda('afiliados')">
                         <button onclick="somarRenda('afiliados')" class="btn-primary px-4">+</button>
+                        <button onclick="zerarRenda('afiliados')" title="Zerar acumulado" style="padding:.4rem .65rem;background:var(--card2);border:1px solid var(--border2);border-radius:.5rem;color:#64748b;cursor:pointer">↺</button>
                     </div>
                 </div>
             </div>
@@ -655,9 +707,7 @@
             <!-- Plano Alimentar -->
             <div class="card p-5 lg:col-span-2 space-y-4">
                 <div class="flex items-center gap-2.5 pb-3" style="border-bottom:1px solid var(--border2)">
-                    <div class="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 grid place-items-center">
-                        
-                    </div>
+                    <div class="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 grid place-items-center">🥗</div>
                     <div>
                         <h2 class="font-bold text-slate-100 text-sm">Plano Alimentar (Foco)</h2>
                         <p class="text-[10px] text-slate-500">Dieta atual configurada</p>
@@ -670,7 +720,7 @@
                             <span class="h-6 w-6 rounded-md bg-amber-500/15 border border-amber-500/30 grid place-items-center text-xs">🌅</span>
                             <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Pré-Treino</span>
                         </div>
-                        <p class="text-xs text-slate-300 leading-relaxed">2 fatias de pão integral + banana + pasta de amendoim + mel + café preto sem açúcar.</p>
+                        <textarea id="refeicao-pre" rows="2" class="refeicao-input" onchange="salvarEstadoGeral()">2 fatias de pão integral + banana + pasta de amendoim + mel + café preto sem açúcar.</textarea>
                     </div>
                     <!-- Pós-treino -->
                     <div class="rounded-xl p-3.5" style="background:var(--card2); border:1px solid var(--border2)">
@@ -678,7 +728,7 @@
                             <span class="h-6 w-6 rounded-md bg-sky-500/15 border border-sky-500/30 grid place-items-center text-xs">🥚</span>
                             <span class="text-xs font-bold text-sky-400 uppercase tracking-wider">Pós-Treino</span>
                         </div>
-                        <p class="text-xs text-slate-300 leading-relaxed">1 ovo mexido ou cozido + shake de Whey Protein batido com água.</p>
+                        <textarea id="refeicao-pos" rows="2" class="refeicao-input" onchange="salvarEstadoGeral()">1 ovo mexido ou cozido + shake de Whey Protein batido com água.</textarea>
                     </div>
                     <!-- Almoço -->
                     <div class="rounded-xl p-3.5" style="background:var(--card2); border:1px solid var(--border2)">
@@ -686,7 +736,7 @@
                             <span class="h-6 w-6 rounded-md bg-emerald-500/15 border border-emerald-500/30 grid place-items-center text-xs">🍽️</span>
                             <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Almoço</span>
                         </div>
-                        <p class="text-xs text-slate-300 leading-relaxed">150–180g de carne magra (frango/patinho) + 5 col. de arroz com feijão + legumes + salada com azeite + suco natural sem açúcar.</p>
+                        <textarea id="refeicao-almoco" rows="3" class="refeicao-input" onchange="salvarEstadoGeral()">150–180g de carne magra (frango/patinho) + 5 col. de arroz com feijão + legumes + salada com azeite + suco natural sem açúcar.</textarea>
                     </div>
                     <!-- Lanche -->
                     <div class="rounded-xl p-3.5" style="background:var(--card2); border:1px solid #2d4a1e">
@@ -694,7 +744,7 @@
                             <span class="h-6 w-6 rounded-md bg-purple-500/15 border border-purple-500/30 grid place-items-center text-xs">🥤</span>
                             <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Lanche da Tarde</span>
                         </div>
-                        <p class="text-xs font-bold text-emerald-400">Dose de Hipercalórico batido com leite integral.</p>
+                        <textarea id="refeicao-lanche" rows="2" class="refeicao-input" style="color:#34d399;font-weight:700" onchange="salvarEstadoGeral()">Dose de Hipercalórico batido com leite integral.</textarea>
                     </div>
                     <!-- Jantar -->
                     <div class="rounded-xl p-3.5" style="background:var(--card2); border:1px solid var(--border2)">
@@ -702,7 +752,7 @@
                             <span class="h-6 w-6 rounded-md bg-rose-500/15 border border-rose-500/30 grid place-items-center text-xs">🌙</span>
                             <span class="text-xs font-bold text-rose-400 uppercase tracking-wider">Jantar</span>
                         </div>
-                        <p class="text-xs text-slate-300 leading-relaxed">120g de carne magra + carboidrato médio (batata/arroz/mandioca) + ovos + salada com azeite.</p>
+                        <textarea id="refeicao-jantar" rows="2" class="refeicao-input" onchange="salvarEstadoGeral()">120g de carne magra + carboidrato médio (batata/arroz/mandioca) + ovos + salada com azeite.</textarea>
                     </div>
                 </div>
             </div>
@@ -710,9 +760,7 @@
             <!-- Ficha de Treino -->
             <div class="card p-5 space-y-4">
                 <div class="flex items-center gap-2.5 pb-3" style="border-bottom:1px solid var(--border2)">
-                    <div class="h-8 w-8 rounded-lg bg-sky-500/10 border border-sky-500/30 grid place-items-center">
-                        
-                    </div>
+                    <div class="h-8 w-8 rounded-lg bg-sky-500/10 border border-sky-500/30 grid place-items-center">🏋️</div>
                     <div>
                         <h2 class="font-bold text-slate-100 text-sm">Ficha de Treinos</h2>
                         <p class="text-[10px] text-slate-500">Edite direto nas células</p>
@@ -744,6 +792,25 @@
                         <input type="text" id="treino-sab" placeholder="Ex: Cárdio + Abdominais" class="flex-1 bg-transparent focus:outline-none text-sm text-slate-200 placeholder-slate-600" onchange="salvarEstadoGeral()">
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Controle de Remédio -->
+        <div class="card p-5 space-y-4">
+            <div class="flex items-center justify-between pb-3" style="border-bottom:1px solid var(--border2)">
+                <div class="flex items-center gap-2.5">
+                    <div class="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 grid place-items-center">💊</div>
+                    <div>
+                        <h2 class="font-bold text-slate-100 text-sm">Controle de Remédio</h2>
+                        <p class="text-[10px] text-slate-500" id="remedio-ref">Dias que você tomou</p>
+                    </div>
+                </div>
+                <button onclick="marcarRemedioHoje()" class="text-xs px-3 py-1.5 rounded-lg cursor-pointer transition" style="background:var(--card2); border:1px solid var(--border); color:#34d399">+ Marcar hoje</button>
+            </div>
+            <div id="remedio-dias" class="flex flex-wrap gap-2"><p class="text-xs text-slate-500 italic">Nenhum dia marcado ainda.</p></div>
+            <div>
+                <label class="text-[11px] text-slate-500 block mb-1">Anotações (dosagem, horário, observações...)</label>
+                <textarea id="remedio-notas" rows="2" placeholder="Ex: 1 comprimido após o almoço..." class="input-base" style="resize:vertical" onchange="salvarEstadoGeral()"></textarea>
             </div>
         </div>
     </div>
@@ -917,6 +984,11 @@
     let timesCache = [];
     let listaHabitos = [];
     let listaMetas = [];
+    let listaTransacoes = [];
+    let remedioDias = [];
+    let nomesRenda = {radar:'Radar Imports', arbitragem:'Arbitragem', entregas:'Entregas', afiliados:'Links de Afiliados'};
+    const NOME_CONTA = {nubank:'Nubank', inter:'Banco Inter', mp:'Mercado Pago', infinite:'InfinitePay', invest:'Investimentos', dinheiro:'Dinheiro Vivo'};
+    function nomeConta(c){ return NOME_CONTA[c] || c; }
     let timerInterval = null, timerSegundos = 25*60, timerRodando = false, timerModo = 'foco';
     const MODOS_TIMER = {foco:{seg:25*60,label:'Foco · 25 min',cor:'#f87171'},pausa:{seg:5*60,label:'Pausa curta · 5 min',cor:'#34d399'},longa:{seg:15*60,label:'Pausa longa · 15 min',cor:'#38bdf8'}};
 
@@ -952,6 +1024,13 @@
     /* ── FINANCEIRO ── */
     let listaDespesasFixas = [], listaDividas = [];
 
+    function ajustarSaldo(conta, delta) {
+        const el = document.getElementById('saldo-' + (conta || 'nubank'));
+        if (!el) return;
+        el.value = ((parseFloat(el.value) || 0) + delta).toFixed(2);
+        atualizarPatrimonio();
+    }
+
     function atualizarPatrimonio() {
         const ids = ['nubank','inter','mp','infinite','invest','dinheiro'];
         const total = ids.reduce((s, id) => s + (parseFloat(document.getElementById('saldo-' + id).value) || 0), 0);
@@ -968,14 +1047,47 @@
         const saldo = parseFloat(el.value) || 0;
         const executarAbate = () => {
             el.value = (saldo - valor).toFixed(2);
+            listaTransacoes.push({ id: Date.now(), nome, valor, conta, data: Date.now() });
             document.getElementById('gasto-nome').value = '';
             document.getElementById('gasto-valor').value = '';
             atualizarPatrimonio();
-            toast('Despesa "' + nome + '" abatida com sucesso!');
+            renderTransacoes();
+            toast('Despesa "' + nome + '" abatida de ' + nomeConta(conta) + '!');
         };
         if (valor > saldo) {
             miniModalConfirmar('Valor maior que o saldo disponível. Confirmar assim mesmo?', executarAbate);
         } else { executarAbate(); }
+    }
+
+    function renderTransacoes() {
+        const el = document.getElementById('lista-transacoes');
+        const totalEl = document.getElementById('extrato-total');
+        if (!el) return;
+        const total = listaTransacoes.reduce((s,t) => s + t.valor, 0);
+        if (totalEl) totalEl.innerText = 'R$ ' + total.toFixed(2).replace('.', ',');
+        if (listaTransacoes.length === 0) { el.innerHTML = '<p class="text-xs text-slate-500 italic">Nenhuma saída lançada ainda.</p>'; return; }
+        el.innerHTML = listaTransacoes.slice().reverse().map(t => `
+            <div class="flex items-center justify-between p-2.5 rounded-lg text-sm" style="background:var(--card2); border:1px solid var(--border2)">
+                <div class="min-w-0">
+                    <div class="text-slate-200 font-medium truncate">${escapeHTML(t.nome)}</div>
+                    <div class="text-[10px] text-slate-500">${new Date(t.data).toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})} · ${nomeConta(t.conta)}</div>
+                </div>
+                <div class="flex items-center gap-3 shrink-0">
+                    <span class="font-bold text-rose-400">- R$ ${t.valor.toFixed(2).replace('.',',')}</span>
+                    <button onclick="estornarSaida(${t.id})" title="Estornar e devolver saldo" class="text-slate-600 hover:text-emerald-400 bg-transparent border-none cursor-pointer text-base">↩</button>
+                </div>
+            </div>`).join('');
+    }
+
+    function estornarSaida(id) {
+        const idx = listaTransacoes.findIndex(t => t.id === id);
+        if (idx < 0) return;
+        const t = listaTransacoes[idx];
+        const elSaldo = document.getElementById('saldo-' + t.conta);
+        if (elSaldo) { elSaldo.value = ((parseFloat(elSaldo.value)||0) + t.valor).toFixed(2); atualizarPatrimonio(); }
+        listaTransacoes.splice(idx, 1);
+        renderTransacoes();
+        toast('Saída estornada — R$ ' + t.valor.toFixed(2).replace('.',',') + ' devolvido a ' + nomeConta(t.conta));
     }
 
     function formatarData(s) {
@@ -987,7 +1099,7 @@
     function renderDividas() {
         document.getElementById('tabela-dividas').innerHTML = listaDividas.map((item, i) => `
             <tr>
-                <td class="font-semibold text-slate-200">${escapeHTML(item.credor)}</td>
+                <td class="font-semibold text-slate-200">${escapeHTML(item.credor)}<div class="text-[10px] text-slate-500 font-normal">via ${nomeConta(item.conta || 'nubank')}</div></td>
                 <td class="text-center text-slate-400">${formatarData(item.vencimento)}</td>
                 <td class="text-center text-amber-400 font-bold">R$ ${item.valor.toFixed(2).replace('.',',')}</td>
                 <td class="text-center"><button onclick="toggleStatusDivida(${i})" class="pill cursor-pointer ${item.pago ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border-rose-500/30'}">${item.pago ? 'Quitado' : 'Em aberto'}</button></td>
@@ -1000,20 +1112,27 @@
         const credor = document.getElementById('divida-credor').value.trim();
         const valor = parseFloat(document.getElementById('divida-valor').value) || 0;
         const vencimento = document.getElementById('divida-vencimento').value;
+        const conta = document.getElementById('divida-conta').value;
         if (!credor || valor <= 0) { toast('Preencha credor e valor da dívida.', 'aviso'); return; }
-        listaDividas.push({credor, valor, vencimento, pago: false});
+        listaDividas.push({credor, valor, vencimento, conta, pago: false, abatido: false});
         document.getElementById('divida-credor').value = '';
         document.getElementById('divida-valor').value = '';
         document.getElementById('divida-vencimento').value = '';
         renderDividas();
     }
-    function toggleStatusDivida(i) { listaDividas[i].pago = !listaDividas[i].pago; renderDividas(); }
+    function toggleStatusDivida(i) {
+        const d = listaDividas[i];
+        d.pago = !d.pago;
+        if (d.pago && !d.abatido) { ajustarSaldo(d.conta, -d.valor); d.abatido = true; toast('Dívida quitada — R$ ' + d.valor.toFixed(2).replace('.',',') + ' abatido de ' + nomeConta(d.conta)); }
+        else if (!d.pago && d.abatido) { ajustarSaldo(d.conta, d.valor); d.abatido = false; toast('Dívida reaberta — valor estornado'); }
+        renderDividas();
+    }
     function removerDivida(i) { listaDividas.splice(i, 1); renderDividas(); }
 
     function renderizarFixas() {
         document.getElementById('tabela-fixas').innerHTML = listaDespesasFixas.map((item, i) => `
             <tr>
-                <td class="font-semibold text-slate-200">${escapeHTML(item.nome)}</td>
+                <td class="font-semibold text-slate-200">${escapeHTML(item.nome)}<div class="text-[10px] text-slate-500 font-normal">via ${nomeConta(item.conta || 'nubank')}</div></td>
                 <td class="text-center text-slate-300">R$ ${item.valor.toFixed(2).replace('.',',')}</td>
                 <td class="text-center"><button onclick="toggleStatusFixa(${i})" class="pill cursor-pointer ${item.pago ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-amber-500/10 text-amber-400 border-amber-500/30'}">${item.pago ? 'Pago' : 'Pendente'}</button></td>
                 <td class="text-right"><button onclick="removerFixa(${i})" class="text-slate-600 hover:text-rose-400 cursor-pointer bg-transparent border-none">🗑</button></td>
@@ -1024,26 +1143,100 @@
     function addDespesaFixa() {
         const nome = document.getElementById('fixa-nome').value.trim();
         const valor = parseFloat(document.getElementById('fixa-valor').value) || 0;
+        const conta = document.getElementById('fixa-conta').value;
         if (!nome || valor <= 0) return;
-        listaDespesasFixas.push({nome, valor, pago: false});
+        listaDespesasFixas.push({nome, valor, conta, pago: false, abatido: false});
         document.getElementById('fixa-nome').value = '';
         document.getElementById('fixa-valor').value = '';
         renderizarFixas();
     }
-    function toggleStatusFixa(i) { listaDespesasFixas[i].pago = !listaDespesasFixas[i].pago; renderizarFixas(); }
+    function toggleStatusFixa(i) {
+        const f = listaDespesasFixas[i];
+        f.pago = !f.pago;
+        if (f.pago && !f.abatido) { ajustarSaldo(f.conta, -f.valor); f.abatido = true; toast(f.nome + ' paga — R$ ' + f.valor.toFixed(2).replace('.',',') + ' abatido de ' + nomeConta(f.conta)); }
+        else if (!f.pago && f.abatido) { ajustarSaldo(f.conta, f.valor); f.abatido = false; toast(f.nome + ' reaberta — valor estornado'); }
+        renderizarFixas();
+    }
     function removerFixa(i) { listaDespesasFixas.splice(i, 1); renderizarFixas(); }
 
     /* ── RENDAS EXTRAS ── */
-    let dadosRenda = {'99': 0, 'afiliados': 0};
+    let dadosRenda = {radar: 0, arbitragem: 0, entregas: 0, afiliados: 0};
+    const CANAIS_RENDA = ['radar','arbitragem','entregas','afiliados'];
+
     function somarRenda(canal) {
         const campo = document.getElementById('in-' + canal);
         const valor = parseFloat(campo.value);
         if (!isNaN(valor) && valor > 0) {
-            dadosRenda[canal] += valor;
+            dadosRenda[canal] = (dadosRenda[canal] || 0) + valor;
             document.getElementById('txt-' + canal).innerText = 'R$ ' + dadosRenda[canal].toFixed(2).replace('.', ',');
             campo.value = '';
-            salvarEstadoGeral();
+            salvarEstadoGeral(); atualizarResumo();
         }
+    }
+
+    function zerarRenda(canal) {
+        miniModalConfirmar('Zerar o acumulado deste canal?', () => {
+            dadosRenda[canal] = 0;
+            document.getElementById('txt-' + canal).innerText = 'R$ 0,00';
+            salvarEstadoGeral(); atualizarResumo();
+            toast('Canal zerado.');
+        });
+    }
+
+    function salvarNomeRenda(canal) {
+        const inp = document.getElementById('nome-' + canal);
+        if (!inp) return;
+        nomesRenda[canal] = inp.value.trim() || nomesRenda[canal];
+        inp.value = nomesRenda[canal];
+        const lbl = document.getElementById('lblr-' + canal);
+        if (lbl) lbl.innerText = nomesRenda[canal];
+        salvarEstadoGeral();
+    }
+
+    function renderNomesRenda() {
+        CANAIS_RENDA.forEach(canal => {
+            const nome = nomesRenda[canal];
+            const inp = document.getElementById('nome-' + canal);
+            if (inp && nome) inp.value = nome;
+            const lbl = document.getElementById('lblr-' + canal);
+            if (lbl && nome) lbl.innerText = nome;
+        });
+    }
+
+    /* ── CONTROLE DE REMÉDIO ── */
+    function toggleRemedioHoje() {
+        const checked = document.getElementById('saude-remedio').checked;
+        const d = hoje();
+        const i = remedioDias.indexOf(d);
+        if (checked && i < 0) remedioDias.push(d);
+        if (!checked && i >= 0) remedioDias.splice(i, 1);
+        renderRemedio(); salvarEstadoGeral(); atualizarResumo();
+    }
+
+    function marcarRemedioHoje() {
+        const d = hoje();
+        if (remedioDias.indexOf(d) < 0) {
+            remedioDias.push(d);
+            const cb = document.getElementById('saude-remedio'); if (cb) cb.checked = true;
+            renderRemedio(); salvarEstadoGeral(); atualizarResumo();
+            toast('Remédio de hoje marcado! 💊');
+        } else { toast('Hoje já está marcado.', 'aviso'); }
+    }
+
+    function removerRemedioDia(d) {
+        remedioDias = remedioDias.filter(x => x !== d);
+        if (d === hoje()) { const cb = document.getElementById('saude-remedio'); if (cb) cb.checked = false; }
+        renderRemedio(); salvarEstadoGeral(); atualizarResumo();
+    }
+
+    function renderRemedio() {
+        const el = document.getElementById('remedio-dias');
+        const ref = document.getElementById('remedio-ref');
+        if (ref) ref.innerText = remedioDias.length > 0 ? `${remedioDias.length} dia${remedioDias.length>1?'s':''} marcado${remedioDias.length>1?'s':''}` : 'Dias que você tomou';
+        if (!el) return;
+        if (remedioDias.length === 0) { el.innerHTML = '<p class="text-xs text-slate-500 italic">Nenhum dia marcado ainda. Use o ✓ Remédio no topo ou o botão acima.</p>'; return; }
+        const fmt = s => { const [a,m,dd] = s.split('-'); return dd + '/' + m; };
+        el.innerHTML = remedioDias.slice().sort().reverse().map(d => `<span class="pill" style="color:#34d399;background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.3)">💊 ${fmt(d)}<button onclick="removerRemedioDia('${d}')" class="bg-transparent border-none cursor-pointer ml-1" style="color:#34d399">×</button></span>`).join('');
     }
 
     /* ── TAREFAS ── */
@@ -1324,12 +1517,14 @@
         const tarefas = [];
         document.querySelectorAll('#lista li span:last-of-type').forEach(s => tarefas.push(s.innerText));
         return {
-            saude: {remedio: document.getElementById('saude-remedio').checked, creatina: document.getElementById('saude-creatina').checked},
-            financas: {nubank: document.getElementById('saldo-nubank').value, inter: document.getElementById('saldo-inter').value, mp: document.getElementById('saldo-mp').value, infinite: document.getElementById('saldo-infinite').value, invest: document.getElementById('saldo-invest').value, dinheiro: document.getElementById('saldo-dinheiro').value, fixas: listaDespesasFixas, dividas: listaDividas},
+            saude: {remedio: document.getElementById('saude-remedio').checked, creatina: document.getElementById('saude-creatina').checked, remedioDias: remedioDias, remedioNotas: document.getElementById('remedio-notas') ? document.getElementById('remedio-notas').value : ''},
+            nomesRenda: nomesRenda,
+            financas: {nubank: document.getElementById('saldo-nubank').value, inter: document.getElementById('saldo-inter').value, mp: document.getElementById('saldo-mp').value, infinite: document.getElementById('saldo-infinite').value, invest: document.getElementById('saldo-invest').value, dinheiro: document.getElementById('saldo-dinheiro').value, fixas: listaDespesasFixas, dividas: listaDividas, transacoes: listaTransacoes},
             rendas: dadosRenda,
             tarefas,
             notasEsporte: document.getElementById('notas-esporte').value,
             fichaTreino: {seg: document.getElementById('treino-seg').value, ter: document.getElementById('treino-ter').value, qua: document.getElementById('treino-qua').value, qui: document.getElementById('treino-qui').value, sex: document.getElementById('treino-sex').value, sab: document.getElementById('treino-sab').value},
+            planoAlimentar: {pre: document.getElementById('refeicao-pre').value, pos: document.getElementById('refeicao-pos').value, almoco: document.getElementById('refeicao-almoco').value, lanche: document.getElementById('refeicao-lanche').value, jantar: document.getElementById('refeicao-jantar').value},
             habitos: listaHabitos,
             metas: listaMetas
         };
@@ -1344,18 +1539,25 @@
         if (!raw) return;
         try {
             const d = JSON.parse(raw);
-            if (d.saude) { document.getElementById('saude-remedio').checked = d.saude.remedio||false; document.getElementById('saude-creatina').checked = d.saude.creatina||false; }
+            if (d.saude) {
+                document.getElementById('saude-creatina').checked = d.saude.creatina||false;
+                remedioDias = d.saude.remedioDias || [];
+                document.getElementById('saude-remedio').checked = remedioDias.includes(hoje());
+                const rn = document.getElementById('remedio-notas'); if (rn) rn.value = d.saude.remedioNotas || '';
+                renderRemedio();
+            }
+            if (d.nomesRenda) { nomesRenda = Object.assign(nomesRenda, d.nomesRenda); }
+            renderNomesRenda();
             if (d.financas) {
                 ['nubank','inter','mp','infinite','invest','dinheiro'].forEach(k => { document.getElementById('saldo-' + k).value = d.financas[k] || '0.00'; });
-                listaDespesasFixas = d.financas.fixas || []; listaDividas = d.financas.dividas || [];
-                renderizarFixas(); renderDividas();
+                listaDespesasFixas = d.financas.fixas || []; listaDividas = d.financas.dividas || []; listaTransacoes = d.financas.transacoes || [];
+                renderizarFixas(); renderDividas(); renderTransacoes();
                 const total = ['nubank','inter','mp','infinite','invest','dinheiro'].reduce((s, k) => s + (parseFloat(d.financas[k])||0), 0);
                 document.getElementById('txt-patrimonio-total').innerText = 'R$ ' + total.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
             }
             if (d.rendas) {
-                dadosRenda = d.rendas;
-                document.getElementById('txt-99').innerText = 'R$ ' + (dadosRenda['99']||0).toFixed(2).replace('.', ',');
-                document.getElementById('txt-afiliados').innerText = 'R$ ' + (dadosRenda['afiliados']||0).toFixed(2).replace('.', ',');
+                dadosRenda = Object.assign({radar:0, arbitragem:0, entregas:0, afiliados:0}, d.rendas);
+                CANAIS_RENDA.forEach(k => { const el = document.getElementById('txt-' + k); if (el) el.innerText = 'R$ ' + (dadosRenda[k]||0).toFixed(2).replace('.', ','); });
             }
             if (d.tarefas) {
                 d.tarefas.forEach(t => {
@@ -1368,6 +1570,7 @@
                 });
             }
             if (d.fichaTreino) { ['seg','ter','qua','qui','sex','sab'].forEach(k => { document.getElementById('treino-' + k).value = d.fichaTreino[k]||''; }); }
+            if (d.planoAlimentar) { ['pre','pos','almoco','lanche','jantar'].forEach(k => { const el = document.getElementById('refeicao-' + k); if (el && d.planoAlimentar[k] != null && d.planoAlimentar[k] !== '') el.value = d.planoAlimentar[k]; }); }
             if (d.notasEsporte) document.getElementById('notas-esporte').value = d.notasEsporte;
             atualizarEmptyTarefas();
             if (d.habitos) { listaHabitos = d.habitos; checkResetHabitos(); renderHabitos(); }
@@ -1428,13 +1631,14 @@
         }
 
         // Rendas
-        const r99 = dadosRenda['99'] || 0, rafl = dadosRenda['afiliados'] || 0;
-        const el99 = document.getElementById('resumo-99');
-        const elAfl = document.getElementById('resumo-afiliados');
+        let rendaTotal = 0;
+        CANAIS_RENDA.forEach(k => {
+            const v = dadosRenda[k] || 0; rendaTotal += v;
+            const el = document.getElementById('resumo-' + k);
+            if (el) el.innerText = 'R$ ' + v.toFixed(2).replace('.', ',');
+        });
         const elTot = document.getElementById('resumo-renda-total');
-        if (el99) el99.innerText = 'R$ ' + r99.toFixed(2).replace('.', ',');
-        if (elAfl) elAfl.innerText = 'R$ ' + rafl.toFixed(2).replace('.', ',');
-        if (elTot) elTot.innerText = 'R$ ' + (r99 + rafl).toFixed(2).replace('.', ',');
+        if (elTot) elTot.innerText = 'R$ ' + rendaTotal.toFixed(2).replace('.', ',');
 
         // Saúde pills
         const remedio = document.getElementById('saude-remedio')?.checked;
@@ -1813,6 +2017,9 @@
         atualizarResumo();
         iniciarClima();
         atualizarDisplayTimer();
+        renderRemedio();
+        renderNomesRenda();
+        setTimeout(() => { if (!esportesCarregados) carregarEsportes(); }, 600);
     });
 </script>
 </body>
