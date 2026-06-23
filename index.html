@@ -1267,6 +1267,7 @@
     }
 
     let esportesCarregados = false;
+    let appCarregando = true; // trava: não salva/sincroniza enquanto o app está só carregando dados
     let corridaCache = null;
     let timesCache = [];
     let listaHabitos = [];
@@ -1818,6 +1819,7 @@
     }
 
     function salvarEstadoGeral() {
+        if (appCarregando) return; // durante o carregamento não salvamos nem carimbamos hora
         localStorage.setItem('painel_foco_dados', JSON.stringify(capturarEstrutura()));
         localStorage.setItem('painel_foco_ts', String(Date.now()));
         agendarSyncNuvem();
@@ -2308,6 +2310,7 @@
         atualizarDisplayTimer();
         renderRemedio();
         renderNomesRenda();
+        appCarregando = false; // carregamento concluído: a partir daqui mudanças reais salvam/sincronizam
         iniciarFirebase();
         setTimeout(() => { if (!esportesCarregados) carregarEsportes(); }, 600);
     });
