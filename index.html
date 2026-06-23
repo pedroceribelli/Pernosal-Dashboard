@@ -25,6 +25,23 @@
         html, body { max-width: 100%; overflow-x: hidden; margin: 0; }
         body { background-color: var(--bg); color: #f1f5f9; -webkit-font-smoothing: antialiased; }
         * { box-sizing: border-box; }
+        /* ===== Anti-zoom no mobile ===== */
+        /* Bloqueia duplo-toque para dar zoom */
+        html, body { touch-action: manipulation; }
+        /* No iOS, campo com fonte < 16px faz o Safari dar zoom ao focar.
+           Forçamos 16px nos campos em telas de toque para eliminar esse zoom. */
+        @media (max-width: 768px) {
+            input, select, textarea,
+            .input-base, .refeicao-input,
+            input[type="number"], input[type="text"], input[type="email"],
+            input[type="password"], input[type="search"], input[type="date"] {
+                font-size: 16px !important;
+            }
+            /* Os campos de saldo são estreitos; com 16px precisam de um pouco mais de espaço */
+            #saldo-nubank, #saldo-inter, #saldo-mp, #saldo-infinite, #saldo-invest, #saldo-dinheiro {
+                width: 5.5rem !important;
+            }
+        }
         .card {
             background-color: var(--card);
             border: 1px solid var(--border);
@@ -1025,6 +1042,29 @@
      SCRIPTS
 ════════════════════════════════════ -->
 <script>
+    /* ══════════════════════════════════════
+       ANTI-ZOOM (pinça e duplo-toque) — iOS
+       O iOS ignora user-scalable=no no viewport,
+       então bloqueamos por evento.
+    ══════════════════════════════════════ */
+    (function bloquearZoom() {
+        // Pinça (gestos do Safari iOS)
+        ['gesturestart','gesturechange','gestureend'].forEach(ev =>
+            document.addEventListener(ev, e => e.preventDefault(), { passive: false })
+        );
+        // Duplo-toque para dar zoom
+        let ultimoToque = 0;
+        document.addEventListener('touchend', e => {
+            const agora = Date.now();
+            if (agora - ultimoToque <= 300) e.preventDefault();
+            ultimoToque = agora;
+        }, { passive: false });
+        // Pinça via dois dedos (fallback Android/diversos)
+        document.addEventListener('touchmove', e => {
+            if (e.touches && e.touches.length > 1) e.preventDefault();
+        }, { passive: false });
+    })();
+
     /* ══════════════════════════════════════
        FIREBASE — SINCRONIZAÇÃO NA NUVEM
     ══════════════════════════════════════ */
