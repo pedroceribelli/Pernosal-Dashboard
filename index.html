@@ -2,7 +2,10 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Painel Foco</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -18,7 +21,10 @@
             --border2: #112340;
         }
         * { font-family: 'Outfit', sans-serif; }
-        body { background-color: var(--bg); color: #f1f5f9; }
+        html { -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-adjust: 100%; }
+        html, body { max-width: 100%; overflow-x: hidden; margin: 0; }
+        body { background-color: var(--bg); color: #f1f5f9; -webkit-font-smoothing: antialiased; }
+        * { box-sizing: border-box; }
         .card {
             background-color: var(--card);
             border: 1px solid var(--border);
@@ -163,8 +169,8 @@
 
     <div class="mt-auto p-4" style="border-top:1px solid var(--border2)">
         <div class="flex items-center gap-2 text-xs text-slate-500">
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
-            Sincronizado localmente
+            <span id="sync-dot" class="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
+            <span id="sync-texto">Sincronizado localmente</span>
         </div>
     </div>
 </div>
@@ -174,22 +180,20 @@
 <div class="flex-1 md:ml-64 p-4 md:p-7 space-y-5">
 
     <!-- ── Header ── -->
-    <header class="card p-4 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <button onclick="toggleMenu()" class="h-9 w-9 grid place-items-center rounded-lg cursor-pointer border-none text-slate-400 hover:text-slate-200 transition" style="background:var(--card2); border:1px solid var(--border2)">
+    <header class="card p-3 md:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5 min-w-0">
+            <button onclick="toggleMenu()" class="h-9 w-9 shrink-0 grid place-items-center rounded-lg cursor-pointer border-none text-slate-400 hover:text-slate-200 transition" style="background:var(--card2); border:1px solid var(--border2)">
                 ☰
             </button>
-            <div>
-                <h1 id="titulo-pagina" class="font-bold text-emerald-400 text-lg leading-tight">Painel Principal</h1>
-            </div>
+            <h1 id="titulo-pagina" class="font-bold text-emerald-400 text-base md:text-lg leading-tight truncate">Painel Principal</h1>
         </div>
-        <div class="flex items-center gap-4 text-xs" style="background:var(--card2); border:1px solid var(--border2); border-radius:.75rem; padding:.5rem 1rem;">
-            <label class="flex items-center gap-1.5 cursor-pointer text-slate-300 hover:text-slate-100 transition">
+        <div class="flex items-center justify-around sm:justify-end gap-3 text-xs shrink-0" style="background:var(--card2); border:1px solid var(--border2); border-radius:.75rem; padding:.5rem .85rem;">
+            <label class="flex items-center gap-1.5 cursor-pointer text-slate-300 hover:text-slate-100 transition whitespace-nowrap">
                 <input type="checkbox" id="saude-remedio" class="w-3.5 h-3.5 accent-emerald-500" onchange="toggleRemedioHoje()">
                 <span>💊 Remédio</span>
             </label>
-            <div style="width:1px; height:16px; background:var(--border)"></div>
-            <label class="flex items-center gap-1.5 cursor-pointer text-slate-300 hover:text-slate-100 transition">
+            <div class="shrink-0" style="width:1px; height:16px; background:var(--border)"></div>
+            <label class="flex items-center gap-1.5 cursor-pointer text-slate-300 hover:text-slate-100 transition whitespace-nowrap">
                 <input type="checkbox" id="saude-creatina" class="w-3.5 h-3.5 accent-emerald-500" onchange="salvarEstadoGeral(); atualizarResumo()">
                 <span>🏋️ Creatina</span>
             </label>
@@ -956,6 +960,22 @@
             </div>
         </div>
 
+        <!-- Conta & Sincronização -->
+        <div class="card p-5 space-y-4">
+            <div class="flex items-center gap-2.5 pb-3" style="border-bottom:1px solid var(--border2)">
+                <div class="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 grid place-items-center">☁️</div>
+                <div>
+                    <h2 class="font-bold text-slate-100 text-sm">Conta & Sincronização</h2>
+                    <p class="text-[10px] text-slate-500" id="conta-status">Não conectado</p>
+                </div>
+            </div>
+            <p class="text-xs text-slate-400">Faça login com e-mail/senha para sincronizar seus dados entre celular e PC. Sem login, tudo fica salvo só neste aparelho.</p>
+            <div class="flex flex-col sm:flex-row gap-2">
+                <button id="btn-entrar" onclick="abrirLogin()" class="flex-1 py-2.5 rounded-lg text-xs font-bold cursor-pointer" style="background:#059669; color:white; border:none">🔑 Entrar / Criar conta</button>
+                <button id="btn-sair" onclick="fazerLogout()" class="flex-1 py-2.5 rounded-lg text-xs font-bold cursor-pointer" style="background:var(--card2); border:1px solid var(--border); color:#94a3b8; display:none">Sair da conta</button>
+            </div>
+        </div>
+
     </div>
 </div><!-- /main -->
 
@@ -975,10 +995,181 @@
     </div>
 </div>
 
+<!-- Modal de Login -->
+<div id="login-modal" style="position:fixed; inset:0; z-index:10000; background:rgba(6,14,27,.92); display:none; align-items:center; justify-content:center; padding:1rem;">
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:1rem; padding:1.75rem; width:100%; max-width:360px; box-shadow:0 24px 48px rgba(0,0,0,.7)">
+        <div class="flex items-center gap-2.5 mb-1">
+            <div class="h-9 w-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 grid place-items-center text-base">☁️</div>
+            <div>
+                <div class="font-bold text-slate-100 text-sm">Sincronizar na nuvem</div>
+                <div class="text-[10px] text-slate-500">Entre para salvar entre seus aparelhos</div>
+            </div>
+        </div>
+        <div class="space-y-2.5 mt-4">
+            <input type="email" id="login-email" placeholder="Seu e-mail" class="input-base" autocomplete="email">
+            <input type="password" id="login-senha" placeholder="Sua senha (mín. 6 caracteres)" class="input-base" autocomplete="current-password" onkeypress="if(event.key==='Enter')fazerLogin()">
+            <p id="login-erro" class="text-[11px] text-rose-400" style="display:none"></p>
+            <button onclick="fazerLogin()" class="btn-primary w-full" style="padding:.65rem">Entrar</button>
+            <button onclick="criarConta()" class="w-full py-2.5 rounded-lg text-xs font-semibold cursor-pointer" style="background:var(--card2); border:1px solid var(--border); color:#94a3b8">Criar conta nova</button>
+            <button onclick="fecharLogin()" class="w-full text-[11px] text-slate-500 bg-transparent border-none cursor-pointer pt-1">Usar só neste aparelho (sem nuvem)</button>
+        </div>
+    </div>
+</div>
+
+<!-- Firebase SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
 <!-- ════════════════════════════════════
      SCRIPTS
 ════════════════════════════════════ -->
 <script>
+    /* ══════════════════════════════════════
+       FIREBASE — SINCRONIZAÇÃO NA NUVEM
+    ══════════════════════════════════════ */
+    const firebaseConfig = {
+        apiKey: "AIzaSyDcLpmpcbtmQvGcbaX8H59u7WgVFnJADSM",
+        authDomain: "dashboardip-8ad0c.firebaseapp.com",
+        projectId: "dashboardip-8ad0c",
+        storageBucket: "dashboardip-8ad0c.firebasestorage.app",
+        messagingSenderId: "849991724371",
+        appId: "1:849991724371:web:277ff7818aca57e21005a6"
+    };
+    let fbAuth = null, fbDb = null, usuarioAtual = null, syncTimer = null;
+
+    function firebaseDisponivel() { return typeof firebase !== 'undefined' && fbDb; }
+
+    function iniciarFirebase() {
+        if (typeof firebase === 'undefined') { setSyncStatus('local'); return; }
+        try {
+            firebase.initializeApp(firebaseConfig);
+            fbAuth = firebase.auth();
+            fbDb = firebase.firestore();
+            fbAuth.onAuthStateChanged(onAuthMudou);
+        } catch(e) { console.error('Firebase falhou', e); setSyncStatus('local'); }
+    }
+
+    async function onAuthMudou(user) {
+        usuarioAtual = user;
+        const btnEntrar = document.getElementById('btn-entrar');
+        const btnSair = document.getElementById('btn-sair');
+        const contaStatus = document.getElementById('conta-status');
+        if (user) {
+            if (btnEntrar) btnEntrar.style.display = 'none';
+            if (btnSair) btnSair.style.display = 'block';
+            if (contaStatus) contaStatus.innerText = 'Conectado como ' + user.email;
+            setSyncStatus('carregando');
+            try {
+                const snap = await fbDb.collection('usuarios').doc(user.uid).get();
+                if (snap.exists && snap.data() && snap.data().payload) {
+                    const nuvem = snap.data().payload;
+                    const local = localStorage.getItem('painel_foco_dados');
+                    if (nuvem !== local) {
+                        localStorage.setItem('painel_foco_dados', nuvem);
+                        location.reload();
+                        return;
+                    }
+                    setSyncStatus('ok');
+                } else {
+                    await salvarNuvem(); // primeiro acesso: envia o que está local
+                }
+            } catch(e) { console.error(e); setSyncStatus('erro'); }
+        } else {
+            if (btnEntrar) btnEntrar.style.display = 'block';
+            if (btnSair) btnSair.style.display = 'none';
+            if (contaStatus) contaStatus.innerText = 'Não conectado';
+            setSyncStatus('local');
+        }
+    }
+
+    async function salvarNuvem() {
+        if (!firebaseDisponivel() || !usuarioAtual) return;
+        try {
+            setSyncStatus('salvando');
+            await fbDb.collection('usuarios').doc(usuarioAtual.uid).set({
+                payload: localStorage.getItem('painel_foco_dados') || '{}',
+                atualizado: Date.now()
+            });
+            setSyncStatus('ok');
+        } catch(e) { console.error(e); setSyncStatus('erro'); }
+    }
+
+    function agendarSyncNuvem() {
+        if (!usuarioAtual) return;
+        clearTimeout(syncTimer);
+        syncTimer = setTimeout(salvarNuvem, 1200);
+    }
+
+    function setSyncStatus(estado) {
+        const dot = document.getElementById('sync-dot');
+        const txt = document.getElementById('sync-texto');
+        if (!dot || !txt) return;
+        const mapa = {
+            local:      ['#64748b', 'Salvo neste aparelho'],
+            carregando: ['#fbbf24', 'Carregando nuvem...'],
+            salvando:   ['#fbbf24', 'Sincronizando...'],
+            ok:         ['#34d399', 'Sincronizado na nuvem'],
+            erro:       ['#f87171', 'Erro de sincronização']
+        };
+        const x = mapa[estado] || mapa.local;
+        dot.style.background = x[0];
+        txt.innerText = x[1];
+    }
+
+    /* ── LOGIN ── */
+    function abrirLogin() {
+        if (!firebaseDisponivel() && typeof firebase === 'undefined') { toast('Sem conexão com o Firebase agora.', 'aviso'); return; }
+        document.getElementById('login-erro').style.display = 'none';
+        document.getElementById('login-modal').style.display = 'flex';
+        setTimeout(() => document.getElementById('login-email').focus(), 100);
+    }
+    function fecharLogin() { document.getElementById('login-modal').style.display = 'none'; }
+
+    function loginErro(msg) {
+        const el = document.getElementById('login-erro');
+        el.innerText = msg; el.style.display = 'block';
+    }
+
+    function traduzErroAuth(code) {
+        const m = {
+            'auth/invalid-email': 'E-mail inválido.',
+            'auth/missing-password': 'Digite a senha.',
+            'auth/weak-password': 'A senha precisa de pelo menos 6 caracteres.',
+            'auth/email-already-in-use': 'Esse e-mail já tem conta. Use "Entrar".',
+            'auth/invalid-credential': 'E-mail ou senha incorretos.',
+            'auth/wrong-password': 'Senha incorreta.',
+            'auth/user-not-found': 'Conta não encontrada. Use "Criar conta".',
+            'auth/network-request-failed': 'Sem internet.'
+        };
+        return m[code] || 'Não foi possível. Tente de novo.';
+    }
+
+    async function fazerLogin() {
+        if (!firebaseDisponivel()) { loginErro('Firebase indisponível.'); return; }
+        const email = document.getElementById('login-email').value.trim();
+        const senha = document.getElementById('login-senha').value;
+        if (!email || !senha) { loginErro('Preencha e-mail e senha.'); return; }
+        try { await fbAuth.signInWithEmailAndPassword(email, senha); fecharLogin(); toast('Conectado! ☁️'); }
+        catch(e) { loginErro(traduzErroAuth(e.code)); }
+    }
+
+    async function criarConta() {
+        if (!firebaseDisponivel()) { loginErro('Firebase indisponível.'); return; }
+        const email = document.getElementById('login-email').value.trim();
+        const senha = document.getElementById('login-senha').value;
+        if (!email || !senha) { loginErro('Preencha e-mail e senha.'); return; }
+        try { await fbAuth.createUserWithEmailAndPassword(email, senha); fecharLogin(); toast('Conta criada! ☁️'); }
+        catch(e) { loginErro(traduzErroAuth(e.code)); }
+    }
+
+    async function fazerLogout() {
+        if (!firebaseDisponivel()) return;
+        miniModalConfirmar('Sair da conta? Seus dados continuam salvos neste aparelho.', async () => {
+            try { await fbAuth.signOut(); toast('Você saiu da conta.'); } catch(e) {}
+        });
+    }
+
     let esportesCarregados = false;
     let corridaCache = null;
     let timesCache = [];
@@ -1532,6 +1723,7 @@
 
     function salvarEstadoGeral() {
         localStorage.setItem('painel_foco_dados', JSON.stringify(capturarEstrutura()));
+        agendarSyncNuvem();
     }
 
     function carregarEstadoGeral() {
@@ -2019,6 +2211,7 @@
         atualizarDisplayTimer();
         renderRemedio();
         renderNomesRenda();
+        iniciarFirebase();
         setTimeout(() => { if (!esportesCarregados) carregarEsportes(); }, 600);
     });
 </script>
