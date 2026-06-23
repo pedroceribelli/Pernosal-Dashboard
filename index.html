@@ -1078,7 +1078,7 @@
         appId: "1:182199123246:web:b0dae8afc8bee448820ebf",
         measurementId: "G-T2F3PHZ1LJ"
     };
-    let fbAuth = null, fbDb = null, usuarioAtual = null, syncTimer = null;
+    let fbAuth = null, fbDb = null, usuarioAtual = null, syncTimer = null, unsubscribeNuvem = null;
 
     function firebaseDisponivel() { return typeof firebase !== 'undefined' && fbDb; }
 
@@ -1138,13 +1138,37 @@
                         setSyncStatus('ok');
                     }
                 }
+                // Liga a sincronização em tempo real (mudanças de outro aparelho chegam sozinhas)
+                iniciarListenerNuvem(user.uid);
             } catch(e) { console.error(e); setSyncStatus('erro'); }
         } else {
+            if (unsubscribeNuvem) { unsubscribeNuvem(); unsubscribeNuvem = null; }
             if (btnEntrar) btnEntrar.style.display = 'block';
             if (btnSair) btnSair.style.display = 'none';
             if (contaStatus) contaStatus.innerText = 'Não conectado';
             setSyncStatus('local');
         }
+    }
+
+    // Escuta o documento na nuvem em tempo real e aplica mudanças mais recentes
+    function iniciarListenerNuvem(uid) {
+        if (!firebaseDisponivel()) return;
+        if (unsubscribeNuvem) { unsubscribeNuvem(); unsubscribeNuvem = null; }
+        unsubscribeNuvem = fbDb.collection('usuarios').doc(uid).onSnapshot(snap => {
+            if (!snap.exists) return;
+            if (snap.metadata && snap.metadata.hasPendingWrites) return; // é a nossa própria gravação ainda em trânsito
+            const d = snap.data();
+            if (!d || !d.payload) return;
+            const nuvem = d.payload;
+            const cts = d.atualizado || 0;
+            const local = localStorage.getItem('painel_foco_dados');
+            const lts = localTs();
+            if (nuvem !== local && cts > lts) {
+                aplicarNuvem(nuvem, cts); // chegou versão mais nova de outro aparelho
+            } else {
+                setSyncStatus('ok');
+            }
+        }, err => { console.error('Listener nuvem falhou', err); setSyncStatus('erro'); });
     }
 
     function aplicarNuvem(nuvem, cts) {
@@ -1170,7 +1194,7 @@
     function agendarSyncNuvem() {
         if (!usuarioAtual) return;
         clearTimeout(syncTimer);
-        syncTimer = setTimeout(salvarNuvem, 1200);
+        syncTimer = setTimeout(salvarNuvem, 600);
     }
 
     function setSyncStatus(estado) {
