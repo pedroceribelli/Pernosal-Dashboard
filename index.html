@@ -21,7 +21,7 @@
             --border2: #112340;
         }
         * { font-family: 'Outfit', sans-serif; }
-        html { -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-adjust: 100%; }
+        html, body { -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-adjust: 100%; }
         html, body { max-width: 100%; overflow-x: hidden; margin: 0; }
         body { background-color: var(--bg); color: #f1f5f9; -webkit-font-smoothing: antialiased; }
         * { box-sizing: border-box; }
@@ -37,9 +37,21 @@
             input[type="password"], input[type="search"], input[type="date"] {
                 font-size: 16px !important;
             }
-            /* Os campos de saldo são estreitos; com 16px precisam de um pouco mais de espaço */
-            #saldo-nubank, #saldo-inter, #saldo-mp, #saldo-infinite, #saldo-invest, #saldo-dinheiro {
-                width: 5.5rem !important;
+            /* Cartões de saldo: tudo fluido pra nada estourar a tela */
+            .metric-card { min-width: 0; gap: .5rem; }
+            .metric-card > div { min-width: 0; }
+            .metric-card > div:first-child { flex: 1 1 auto; }
+            /* o nome do banco trunca com "..." em vez de empurrar o valor pra fora */
+            .metric-card > div:first-child span:last-child {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            #saldo-nubank, #saldo-inter, #saldo-mp,
+            #saldo-infinite, #saldo-invest, #saldo-dinheiro {
+                width: 4.5rem !important;
+                min-width: 0;
+                flex-shrink: 0;
             }
         }
         .card {
@@ -136,7 +148,6 @@
     </style>
 </head>
 <body class="min-h-screen flex">
-
 <!-- ═══════════════ SIDEBAR ═══════════════ -->
 <div id="sidebar" class="fixed inset-y-0 left-0 w-64 z-50 transform -translate-x-full transition-transform duration-300 md:translate-x-0 flex flex-col" style="background:var(--sidebar); border-right:1px solid var(--border2);">
 
@@ -2315,5 +2326,6 @@
         setTimeout(() => { if (!esportesCarregados) carregarEsportes(); }, 600);
     });
 </script>
+
 </body>
 </html>
